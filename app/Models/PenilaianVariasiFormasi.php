@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class PenilaianVariasiFormasi extends Model
+{
+      protected $table = 'penilaian_variasi_formasi';
+
+    protected $fillable = [
+    'id_aspek',
+    'id_peserta',
+    'id_user',
+
+    'nilai',
+    ];
+    public function aspek()
+{
+    return $this->belongsTo(AspekVariasiFormasi::class, 'id_aspek');
+}
+
+public function peserta()
+{
+    return $this->belongsTo(Peserta::class, 'id_peserta');
+}
+public function penilai()
+{
+    return $this->belongsTo(User::class, 'id_user');
+}
+}
