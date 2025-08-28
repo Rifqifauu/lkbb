@@ -7,23 +7,43 @@ use App\Models\RekapNilai;
 
 class Pemeringkatan extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-trophy';
     protected static string $view = 'filament.pages.pemeringkatan';
-    protected static ?string $navigationLabel = 'Pemeringkatan';
 
-    // Ambil data untuk kategori utama
-    public function getUtama()
+    // Daftar aspek penilaian
+    public function getAspek(): array
     {
-        return RekapNilai::with('peserta')
-            ->orderByDesc('total_utama')
-            ->get();
+        return [
+            'nilai_pbb' => 'PBB',
+            'nilai_danton' => 'Danton',
+            'nilai_kostum' => 'Kostum',
+            'nilai_tata_rias' => 'Tata Rias',
+            'nilai_variasi_formasi' => 'Variasi Formasi',
+        ];
     }
 
-    // Ambil data untuk kategori umum
+    // Ranking Utama (semua peserta)
+    public function getUtama()
+    {
+        return RekapNilai::with('peserta')->orderByDesc('total_utama')->get();
+    }
+
+    // Ranking Umum (semua peserta)
     public function getUmum()
     {
-        return RekapNilai::with('peserta')
-            ->orderByDesc('total_umum')
-            ->get();
+        return RekapNilai::with('peserta')->orderByDesc('total_umum')->get();
+    }
+
+    // Juara tiap aspek (3 tertinggi)
+    public function getJuaraPerAspek()
+    {
+        $result = [];
+        foreach ($this->getAspek() as $key => $label) {
+            $top3 = RekapNilai::with('peserta')
+                        ->orderByDesc($key)
+                        ->take(3)
+                        ->get();
+            $result[$label] = $top3;
+        }
+        return $result;
     }
 }
