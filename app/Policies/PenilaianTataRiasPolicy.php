@@ -2,26 +2,28 @@
 
 namespace App\Policies;
 
-use Illuminate\Auth\Access\Response;
-use App\Models\PenilaianTataRias;
 use App\Models\User;
+use App\Models\PenilaianTataRias;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class PenilaianTataRiasPolicy
 {
+    use HandlesAuthorization;
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->checkPermissionTo('view-any PenilaianTataRias');
+        return $user->can('view_any_penilaian::tata::rias');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, PenilaianTataRias $penilaiantatarias): bool
+    public function view(User $user, PenilaianTataRias $penilaianTataRias): bool
     {
-        return $user->checkPermissionTo('view PenilaianTataRias');
+        return $user->can('view_penilaian::tata::rias');
     }
 
     /**
@@ -29,78 +31,78 @@ class PenilaianTataRiasPolicy
      */
     public function create(User $user): bool
     {
-        return $user->checkPermissionTo('create PenilaianTataRias');
+        return $user->can('create_penilaian::tata::rias');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, PenilaianTataRias $penilaiantatarias): bool
+    public function update(User $user, PenilaianTataRias $penilaianTataRias): bool
     {
-        return $user->checkPermissionTo('update PenilaianTataRias');
+        return $user->can('update_penilaian::tata::rias');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, PenilaianTataRias $penilaiantatarias): bool
+    public function delete(User $user, PenilaianTataRias $penilaianTataRias): bool
     {
-        return $user->checkPermissionTo('delete PenilaianTataRias');
+        return $user->can('delete_penilaian::tata::rias');
     }
 
     /**
-     * Determine whether the user can delete any models.
+     * Determine whether the user can bulk delete.
      */
     public function deleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('delete-any PenilaianTataRias');
+        return $user->can('delete_any_penilaian::tata::rias');
     }
 
     /**
-     * Determine whether the user can restore the model.
+     * Determine whether the user can permanently delete.
      */
-    public function restore(User $user, PenilaianTataRias $penilaiantatarias): bool
+    public function forceDelete(User $user, PenilaianTataRias $penilaianTataRias): bool
     {
-        return $user->checkPermissionTo('restore PenilaianTataRias');
+        return $user->can('force_delete_penilaian::tata::rias');
     }
 
     /**
-     * Determine whether the user can restore any models.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->checkPermissionTo('restore-any PenilaianTataRias');
-    }
-
-    /**
-     * Determine whether the user can replicate the model.
-     */
-    public function replicate(User $user, PenilaianTataRias $penilaiantatarias): bool
-    {
-        return $user->checkPermissionTo('replicate PenilaianTataRias');
-    }
-
-    /**
-     * Determine whether the user can reorder the models.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->checkPermissionTo('reorder PenilaianTataRias');
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, PenilaianTataRias $penilaiantatarias): bool
-    {
-        return $user->checkPermissionTo('force-delete PenilaianTataRias');
-    }
-
-    /**
-     * Determine whether the user can permanently delete any models.
+     * Determine whether the user can permanently bulk delete.
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('force-delete-any PenilaianTataRias');
+        return $user->can('force_delete_any_penilaian::tata::rias');
+    }
+
+    /**
+     * Determine whether the user can restore.
+     */
+    public function restore(User $user, PenilaianTataRias $penilaianTataRias): bool
+    {
+        return $user->can('restore_penilaian::tata::rias');
+    }
+
+    /**
+     * Determine whether the user can bulk restore.
+     */
+    public function restoreAny(User $user): bool
+    {
+        return $user->can('restore_any_penilaian::tata::rias');
+    }
+
+    /**
+     * Determine whether the user can replicate.
+     */
+    public function replicate(User $user, PenilaianTataRias $penilaianTataRias): bool
+    {
+        return $user->can('replicate_penilaian::tata::rias');
+    }
+
+    /**
+     * Determine whether the user can reorder.
+     */
+    public function reorder(User $user): bool
+    {
+        return $user->can('reorder_penilaian::tata::rias');
     }
 }

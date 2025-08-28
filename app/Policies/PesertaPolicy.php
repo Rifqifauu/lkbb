@@ -2,18 +2,20 @@
 
 namespace App\Policies;
 
-use Illuminate\Auth\Access\Response;
-use App\Models\Peserta;
 use App\Models\User;
+use App\Models\Peserta;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class PesertaPolicy
 {
+    use HandlesAuthorization;
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->checkPermissionTo('view-any Peserta');
+        return $user->can('view_any_peserta');
     }
 
     /**
@@ -21,7 +23,7 @@ class PesertaPolicy
      */
     public function view(User $user, Peserta $peserta): bool
     {
-        return $user->checkPermissionTo('view Peserta');
+        return $user->can('view_peserta');
     }
 
     /**
@@ -29,7 +31,7 @@ class PesertaPolicy
      */
     public function create(User $user): bool
     {
-        return $user->checkPermissionTo('create Peserta');
+        return $user->can('create_peserta');
     }
 
     /**
@@ -37,7 +39,7 @@ class PesertaPolicy
      */
     public function update(User $user, Peserta $peserta): bool
     {
-        return $user->checkPermissionTo('update Peserta');
+        return $user->can('update_peserta');
     }
 
     /**
@@ -45,62 +47,62 @@ class PesertaPolicy
      */
     public function delete(User $user, Peserta $peserta): bool
     {
-        return $user->checkPermissionTo('delete Peserta');
+        return $user->can('delete_peserta');
     }
 
     /**
-     * Determine whether the user can delete any models.
+     * Determine whether the user can bulk delete.
      */
     public function deleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('delete-any Peserta');
+        return $user->can('delete_any_peserta');
     }
 
     /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Peserta $peserta): bool
-    {
-        return $user->checkPermissionTo('restore Peserta');
-    }
-
-    /**
-     * Determine whether the user can restore any models.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->checkPermissionTo('restore-any Peserta');
-    }
-
-    /**
-     * Determine whether the user can replicate the model.
-     */
-    public function replicate(User $user, Peserta $peserta): bool
-    {
-        return $user->checkPermissionTo('replicate Peserta');
-    }
-
-    /**
-     * Determine whether the user can reorder the models.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->checkPermissionTo('reorder Peserta');
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
+     * Determine whether the user can permanently delete.
      */
     public function forceDelete(User $user, Peserta $peserta): bool
     {
-        return $user->checkPermissionTo('force-delete Peserta');
+        return $user->can('force_delete_peserta');
     }
 
     /**
-     * Determine whether the user can permanently delete any models.
+     * Determine whether the user can permanently bulk delete.
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('force-delete-any Peserta');
+        return $user->can('force_delete_any_peserta');
+    }
+
+    /**
+     * Determine whether the user can restore.
+     */
+    public function restore(User $user, Peserta $peserta): bool
+    {
+        return $user->can('restore_peserta');
+    }
+
+    /**
+     * Determine whether the user can bulk restore.
+     */
+    public function restoreAny(User $user): bool
+    {
+        return $user->can('restore_any_peserta');
+    }
+
+    /**
+     * Determine whether the user can replicate.
+     */
+    public function replicate(User $user, Peserta $peserta): bool
+    {
+        return $user->can('replicate_peserta');
+    }
+
+    /**
+     * Determine whether the user can reorder.
+     */
+    public function reorder(User $user): bool
+    {
+        return $user->can('reorder_peserta');
     }
 }

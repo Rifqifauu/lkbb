@@ -2,26 +2,28 @@
 
 namespace App\Policies;
 
-use Illuminate\Auth\Access\Response;
-use App\Models\AspekPenguranganNilai;
 use App\Models\User;
+use App\Models\AspekPenguranganNilai;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class AspekPenguranganNilaiPolicy
 {
+    use HandlesAuthorization;
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->checkPermissionTo('view-any AspekPenguranganNilai');
+        return $user->can('view_any_aspek::pengurangan::nilai');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, AspekPenguranganNilai $aspekpengurangannilai): bool
+    public function view(User $user, AspekPenguranganNilai $aspekPenguranganNilai): bool
     {
-        return $user->checkPermissionTo('view AspekPenguranganNilai');
+        return $user->can('view_aspek::pengurangan::nilai');
     }
 
     /**
@@ -29,78 +31,78 @@ class AspekPenguranganNilaiPolicy
      */
     public function create(User $user): bool
     {
-        return $user->checkPermissionTo('create AspekPenguranganNilai');
+        return $user->can('create_aspek::pengurangan::nilai');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, AspekPenguranganNilai $aspekpengurangannilai): bool
+    public function update(User $user, AspekPenguranganNilai $aspekPenguranganNilai): bool
     {
-        return $user->checkPermissionTo('update AspekPenguranganNilai');
+        return $user->can('update_aspek::pengurangan::nilai');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, AspekPenguranganNilai $aspekpengurangannilai): bool
+    public function delete(User $user, AspekPenguranganNilai $aspekPenguranganNilai): bool
     {
-        return $user->checkPermissionTo('delete AspekPenguranganNilai');
+        return $user->can('delete_aspek::pengurangan::nilai');
     }
 
     /**
-     * Determine whether the user can delete any models.
+     * Determine whether the user can bulk delete.
      */
     public function deleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('delete-any AspekPenguranganNilai');
+        return $user->can('delete_any_aspek::pengurangan::nilai');
     }
 
     /**
-     * Determine whether the user can restore the model.
+     * Determine whether the user can permanently delete.
      */
-    public function restore(User $user, AspekPenguranganNilai $aspekpengurangannilai): bool
+    public function forceDelete(User $user, AspekPenguranganNilai $aspekPenguranganNilai): bool
     {
-        return $user->checkPermissionTo('restore AspekPenguranganNilai');
+        return $user->can('force_delete_aspek::pengurangan::nilai');
     }
 
     /**
-     * Determine whether the user can restore any models.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->checkPermissionTo('restore-any AspekPenguranganNilai');
-    }
-
-    /**
-     * Determine whether the user can replicate the model.
-     */
-    public function replicate(User $user, AspekPenguranganNilai $aspekpengurangannilai): bool
-    {
-        return $user->checkPermissionTo('replicate AspekPenguranganNilai');
-    }
-
-    /**
-     * Determine whether the user can reorder the models.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->checkPermissionTo('reorder AspekPenguranganNilai');
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, AspekPenguranganNilai $aspekpengurangannilai): bool
-    {
-        return $user->checkPermissionTo('force-delete AspekPenguranganNilai');
-    }
-
-    /**
-     * Determine whether the user can permanently delete any models.
+     * Determine whether the user can permanently bulk delete.
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('force-delete-any AspekPenguranganNilai');
+        return $user->can('force_delete_any_aspek::pengurangan::nilai');
+    }
+
+    /**
+     * Determine whether the user can restore.
+     */
+    public function restore(User $user, AspekPenguranganNilai $aspekPenguranganNilai): bool
+    {
+        return $user->can('restore_aspek::pengurangan::nilai');
+    }
+
+    /**
+     * Determine whether the user can bulk restore.
+     */
+    public function restoreAny(User $user): bool
+    {
+        return $user->can('restore_any_aspek::pengurangan::nilai');
+    }
+
+    /**
+     * Determine whether the user can replicate.
+     */
+    public function replicate(User $user, AspekPenguranganNilai $aspekPenguranganNilai): bool
+    {
+        return $user->can('replicate_aspek::pengurangan::nilai');
+    }
+
+    /**
+     * Determine whether the user can reorder.
+     */
+    public function reorder(User $user): bool
+    {
+        return $user->can('reorder_aspek::pengurangan::nilai');
     }
 }

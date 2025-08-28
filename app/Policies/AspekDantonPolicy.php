@@ -2,26 +2,28 @@
 
 namespace App\Policies;
 
-use Illuminate\Auth\Access\Response;
-use App\Models\AspekDanton;
 use App\Models\User;
+use App\Models\AspekDanton;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class AspekDantonPolicy
 {
+    use HandlesAuthorization;
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->checkPermissionTo('view-any AspekDanton');
+        return $user->can('view_any_aspek::danton');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, AspekDanton $aspekdanton): bool
+    public function view(User $user, AspekDanton $aspekDanton): bool
     {
-        return $user->checkPermissionTo('view AspekDanton');
+        return $user->can('view_aspek::danton');
     }
 
     /**
@@ -29,78 +31,78 @@ class AspekDantonPolicy
      */
     public function create(User $user): bool
     {
-        return $user->checkPermissionTo('create AspekDanton');
+        return $user->can('create_aspek::danton');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, AspekDanton $aspekdanton): bool
+    public function update(User $user, AspekDanton $aspekDanton): bool
     {
-        return $user->checkPermissionTo('update AspekDanton');
+        return $user->can('update_aspek::danton');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, AspekDanton $aspekdanton): bool
+    public function delete(User $user, AspekDanton $aspekDanton): bool
     {
-        return $user->checkPermissionTo('delete AspekDanton');
+        return $user->can('delete_aspek::danton');
     }
 
     /**
-     * Determine whether the user can delete any models.
+     * Determine whether the user can bulk delete.
      */
     public function deleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('delete-any AspekDanton');
+        return $user->can('delete_any_aspek::danton');
     }
 
     /**
-     * Determine whether the user can restore the model.
+     * Determine whether the user can permanently delete.
      */
-    public function restore(User $user, AspekDanton $aspekdanton): bool
+    public function forceDelete(User $user, AspekDanton $aspekDanton): bool
     {
-        return $user->checkPermissionTo('restore AspekDanton');
+        return $user->can('force_delete_aspek::danton');
     }
 
     /**
-     * Determine whether the user can restore any models.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->checkPermissionTo('restore-any AspekDanton');
-    }
-
-    /**
-     * Determine whether the user can replicate the model.
-     */
-    public function replicate(User $user, AspekDanton $aspekdanton): bool
-    {
-        return $user->checkPermissionTo('replicate AspekDanton');
-    }
-
-    /**
-     * Determine whether the user can reorder the models.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->checkPermissionTo('reorder AspekDanton');
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, AspekDanton $aspekdanton): bool
-    {
-        return $user->checkPermissionTo('force-delete AspekDanton');
-    }
-
-    /**
-     * Determine whether the user can permanently delete any models.
+     * Determine whether the user can permanently bulk delete.
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('force-delete-any AspekDanton');
+        return $user->can('force_delete_any_aspek::danton');
+    }
+
+    /**
+     * Determine whether the user can restore.
+     */
+    public function restore(User $user, AspekDanton $aspekDanton): bool
+    {
+        return $user->can('restore_aspek::danton');
+    }
+
+    /**
+     * Determine whether the user can bulk restore.
+     */
+    public function restoreAny(User $user): bool
+    {
+        return $user->can('restore_any_aspek::danton');
+    }
+
+    /**
+     * Determine whether the user can replicate.
+     */
+    public function replicate(User $user, AspekDanton $aspekDanton): bool
+    {
+        return $user->can('replicate_aspek::danton');
+    }
+
+    /**
+     * Determine whether the user can reorder.
+     */
+    public function reorder(User $user): bool
+    {
+        return $user->can('reorder_aspek::danton');
     }
 }

@@ -2,26 +2,28 @@
 
 namespace App\Policies;
 
-use Illuminate\Auth\Access\Response;
-use App\Models\PenilaianVariasiFormasi;
 use App\Models\User;
+use App\Models\PenilaianVariasiFormasi;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class PenilaianVariasiFormasiPolicy
 {
+    use HandlesAuthorization;
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->checkPermissionTo('view-any PenilaianVariasiFormasi');
+        return $user->can('view_any_penilaian::variasi::formasi');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, PenilaianVariasiFormasi $penilaianvariasiformasi): bool
+    public function view(User $user, PenilaianVariasiFormasi $penilaianVariasiFormasi): bool
     {
-        return $user->checkPermissionTo('view PenilaianVariasiFormasi');
+        return $user->can('view_penilaian::variasi::formasi');
     }
 
     /**
@@ -29,78 +31,78 @@ class PenilaianVariasiFormasiPolicy
      */
     public function create(User $user): bool
     {
-        return $user->checkPermissionTo('create PenilaianVariasiFormasi');
+        return $user->can('create_penilaian::variasi::formasi');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, PenilaianVariasiFormasi $penilaianvariasiformasi): bool
+    public function update(User $user, PenilaianVariasiFormasi $penilaianVariasiFormasi): bool
     {
-        return $user->checkPermissionTo('update PenilaianVariasiFormasi');
+        return $user->can('update_penilaian::variasi::formasi');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, PenilaianVariasiFormasi $penilaianvariasiformasi): bool
+    public function delete(User $user, PenilaianVariasiFormasi $penilaianVariasiFormasi): bool
     {
-        return $user->checkPermissionTo('delete PenilaianVariasiFormasi');
+        return $user->can('delete_penilaian::variasi::formasi');
     }
 
     /**
-     * Determine whether the user can delete any models.
+     * Determine whether the user can bulk delete.
      */
     public function deleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('delete-any PenilaianVariasiFormasi');
+        return $user->can('delete_any_penilaian::variasi::formasi');
     }
 
     /**
-     * Determine whether the user can restore the model.
+     * Determine whether the user can permanently delete.
      */
-    public function restore(User $user, PenilaianVariasiFormasi $penilaianvariasiformasi): bool
+    public function forceDelete(User $user, PenilaianVariasiFormasi $penilaianVariasiFormasi): bool
     {
-        return $user->checkPermissionTo('restore PenilaianVariasiFormasi');
+        return $user->can('force_delete_penilaian::variasi::formasi');
     }
 
     /**
-     * Determine whether the user can restore any models.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->checkPermissionTo('restore-any PenilaianVariasiFormasi');
-    }
-
-    /**
-     * Determine whether the user can replicate the model.
-     */
-    public function replicate(User $user, PenilaianVariasiFormasi $penilaianvariasiformasi): bool
-    {
-        return $user->checkPermissionTo('replicate PenilaianVariasiFormasi');
-    }
-
-    /**
-     * Determine whether the user can reorder the models.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->checkPermissionTo('reorder PenilaianVariasiFormasi');
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, PenilaianVariasiFormasi $penilaianvariasiformasi): bool
-    {
-        return $user->checkPermissionTo('force-delete PenilaianVariasiFormasi');
-    }
-
-    /**
-     * Determine whether the user can permanently delete any models.
+     * Determine whether the user can permanently bulk delete.
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('force-delete-any PenilaianVariasiFormasi');
+        return $user->can('force_delete_any_penilaian::variasi::formasi');
+    }
+
+    /**
+     * Determine whether the user can restore.
+     */
+    public function restore(User $user, PenilaianVariasiFormasi $penilaianVariasiFormasi): bool
+    {
+        return $user->can('restore_penilaian::variasi::formasi');
+    }
+
+    /**
+     * Determine whether the user can bulk restore.
+     */
+    public function restoreAny(User $user): bool
+    {
+        return $user->can('restore_any_penilaian::variasi::formasi');
+    }
+
+    /**
+     * Determine whether the user can replicate.
+     */
+    public function replicate(User $user, PenilaianVariasiFormasi $penilaianVariasiFormasi): bool
+    {
+        return $user->can('replicate_penilaian::variasi::formasi');
+    }
+
+    /**
+     * Determine whether the user can reorder.
+     */
+    public function reorder(User $user): bool
+    {
+        return $user->can('reorder_penilaian::variasi::formasi');
     }
 }

@@ -2,26 +2,28 @@
 
 namespace App\Policies;
 
-use Illuminate\Auth\Access\Response;
-use App\Models\AspekSeragam;
 use App\Models\User;
+use App\Models\AspekSeragam;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class AspekSeragamPolicy
 {
+    use HandlesAuthorization;
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->checkPermissionTo('view-any AspekSeragam');
+        return $user->can('view_any_aspek::seragam');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, AspekSeragam $aspekseragam): bool
+    public function view(User $user, AspekSeragam $aspekSeragam): bool
     {
-        return $user->checkPermissionTo('view AspekSeragam');
+        return $user->can('view_aspek::seragam');
     }
 
     /**
@@ -29,78 +31,78 @@ class AspekSeragamPolicy
      */
     public function create(User $user): bool
     {
-        return $user->checkPermissionTo('create AspekSeragam');
+        return $user->can('create_aspek::seragam');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, AspekSeragam $aspekseragam): bool
+    public function update(User $user, AspekSeragam $aspekSeragam): bool
     {
-        return $user->checkPermissionTo('update AspekSeragam');
+        return $user->can('update_aspek::seragam');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, AspekSeragam $aspekseragam): bool
+    public function delete(User $user, AspekSeragam $aspekSeragam): bool
     {
-        return $user->checkPermissionTo('delete AspekSeragam');
+        return $user->can('delete_aspek::seragam');
     }
 
     /**
-     * Determine whether the user can delete any models.
+     * Determine whether the user can bulk delete.
      */
     public function deleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('delete-any AspekSeragam');
+        return $user->can('delete_any_aspek::seragam');
     }
 
     /**
-     * Determine whether the user can restore the model.
+     * Determine whether the user can permanently delete.
      */
-    public function restore(User $user, AspekSeragam $aspekseragam): bool
+    public function forceDelete(User $user, AspekSeragam $aspekSeragam): bool
     {
-        return $user->checkPermissionTo('restore AspekSeragam');
+        return $user->can('force_delete_aspek::seragam');
     }
 
     /**
-     * Determine whether the user can restore any models.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->checkPermissionTo('restore-any AspekSeragam');
-    }
-
-    /**
-     * Determine whether the user can replicate the model.
-     */
-    public function replicate(User $user, AspekSeragam $aspekseragam): bool
-    {
-        return $user->checkPermissionTo('replicate AspekSeragam');
-    }
-
-    /**
-     * Determine whether the user can reorder the models.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->checkPermissionTo('reorder AspekSeragam');
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, AspekSeragam $aspekseragam): bool
-    {
-        return $user->checkPermissionTo('force-delete AspekSeragam');
-    }
-
-    /**
-     * Determine whether the user can permanently delete any models.
+     * Determine whether the user can permanently bulk delete.
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('force-delete-any AspekSeragam');
+        return $user->can('force_delete_any_aspek::seragam');
+    }
+
+    /**
+     * Determine whether the user can restore.
+     */
+    public function restore(User $user, AspekSeragam $aspekSeragam): bool
+    {
+        return $user->can('restore_aspek::seragam');
+    }
+
+    /**
+     * Determine whether the user can bulk restore.
+     */
+    public function restoreAny(User $user): bool
+    {
+        return $user->can('restore_any_aspek::seragam');
+    }
+
+    /**
+     * Determine whether the user can replicate.
+     */
+    public function replicate(User $user, AspekSeragam $aspekSeragam): bool
+    {
+        return $user->can('replicate_aspek::seragam');
+    }
+
+    /**
+     * Determine whether the user can reorder.
+     */
+    public function reorder(User $user): bool
+    {
+        return $user->can('reorder_aspek::seragam');
     }
 }

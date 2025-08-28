@@ -2,26 +2,28 @@
 
 namespace App\Policies;
 
-use Illuminate\Auth\Access\Response;
-use App\Models\PenilaianPBB;
 use App\Models\User;
+use App\Models\PenilaianPBB;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class PenilaianPBBPolicy
 {
+    use HandlesAuthorization;
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->checkPermissionTo('view-any PenilaianPBB');
+        return $user->can('view_any_penilaian::p::b::b');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, PenilaianPBB $penilaianpbb): bool
+    public function view(User $user, PenilaianPBB $penilaianPBB): bool
     {
-        return $user->checkPermissionTo('view PenilaianPBB');
+        return $user->can('view_penilaian::p::b::b');
     }
 
     /**
@@ -29,78 +31,78 @@ class PenilaianPBBPolicy
      */
     public function create(User $user): bool
     {
-        return $user->checkPermissionTo('create PenilaianPBB');
+        return $user->can('create_penilaian::p::b::b');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, PenilaianPBB $penilaianpbb): bool
+    public function update(User $user, PenilaianPBB $penilaianPBB): bool
     {
-        return $user->checkPermissionTo('update PenilaianPBB');
+        return $user->can('update_penilaian::p::b::b');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, PenilaianPBB $penilaianpbb): bool
+    public function delete(User $user, PenilaianPBB $penilaianPBB): bool
     {
-        return $user->checkPermissionTo('delete PenilaianPBB');
+        return $user->can('delete_penilaian::p::b::b');
     }
 
     /**
-     * Determine whether the user can delete any models.
+     * Determine whether the user can bulk delete.
      */
     public function deleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('delete-any PenilaianPBB');
+        return $user->can('delete_any_penilaian::p::b::b');
     }
 
     /**
-     * Determine whether the user can restore the model.
+     * Determine whether the user can permanently delete.
      */
-    public function restore(User $user, PenilaianPBB $penilaianpbb): bool
+    public function forceDelete(User $user, PenilaianPBB $penilaianPBB): bool
     {
-        return $user->checkPermissionTo('restore PenilaianPBB');
+        return $user->can('force_delete_penilaian::p::b::b');
     }
 
     /**
-     * Determine whether the user can restore any models.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->checkPermissionTo('restore-any PenilaianPBB');
-    }
-
-    /**
-     * Determine whether the user can replicate the model.
-     */
-    public function replicate(User $user, PenilaianPBB $penilaianpbb): bool
-    {
-        return $user->checkPermissionTo('replicate PenilaianPBB');
-    }
-
-    /**
-     * Determine whether the user can reorder the models.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->checkPermissionTo('reorder PenilaianPBB');
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, PenilaianPBB $penilaianpbb): bool
-    {
-        return $user->checkPermissionTo('force-delete PenilaianPBB');
-    }
-
-    /**
-     * Determine whether the user can permanently delete any models.
+     * Determine whether the user can permanently bulk delete.
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('force-delete-any PenilaianPBB');
+        return $user->can('force_delete_any_penilaian::p::b::b');
+    }
+
+    /**
+     * Determine whether the user can restore.
+     */
+    public function restore(User $user, PenilaianPBB $penilaianPBB): bool
+    {
+        return $user->can('restore_penilaian::p::b::b');
+    }
+
+    /**
+     * Determine whether the user can bulk restore.
+     */
+    public function restoreAny(User $user): bool
+    {
+        return $user->can('restore_any_penilaian::p::b::b');
+    }
+
+    /**
+     * Determine whether the user can replicate.
+     */
+    public function replicate(User $user, PenilaianPBB $penilaianPBB): bool
+    {
+        return $user->can('replicate_penilaian::p::b::b');
+    }
+
+    /**
+     * Determine whether the user can reorder.
+     */
+    public function reorder(User $user): bool
+    {
+        return $user->can('reorder_penilaian::p::b::b');
     }
 }
