@@ -2,26 +2,28 @@
 
 namespace App\Policies;
 
-use Illuminate\Auth\Access\Response;
-use App\Models\RekapNilai;
 use App\Models\User;
+use App\Models\RekapNilai;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class RekapNilaiPolicy
 {
+    use HandlesAuthorization;
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->checkPermissionTo('view-any RekapNilai');
+        return $user->can('view_any_rekap::nilai');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, RekapNilai $rekapnilai): bool
+    public function view(User $user, RekapNilai $rekapNilai): bool
     {
-        return $user->checkPermissionTo('view RekapNilai');
+        return $user->can('view_rekap::nilai');
     }
 
     /**
@@ -29,78 +31,78 @@ class RekapNilaiPolicy
      */
     public function create(User $user): bool
     {
-        return $user->checkPermissionTo('create RekapNilai');
+        return $user->can('create_rekap::nilai');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, RekapNilai $rekapnilai): bool
+    public function update(User $user, RekapNilai $rekapNilai): bool
     {
-        return $user->checkPermissionTo('update RekapNilai');
+        return $user->can('update_rekap::nilai');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, RekapNilai $rekapnilai): bool
+    public function delete(User $user, RekapNilai $rekapNilai): bool
     {
-        return $user->checkPermissionTo('delete RekapNilai');
+        return $user->can('delete_rekap::nilai');
     }
 
     /**
-     * Determine whether the user can delete any models.
+     * Determine whether the user can bulk delete.
      */
     public function deleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('delete-any RekapNilai');
+        return $user->can('delete_any_rekap::nilai');
     }
 
     /**
-     * Determine whether the user can restore the model.
+     * Determine whether the user can permanently delete.
      */
-    public function restore(User $user, RekapNilai $rekapnilai): bool
+    public function forceDelete(User $user, RekapNilai $rekapNilai): bool
     {
-        return $user->checkPermissionTo('restore RekapNilai');
+        return $user->can('force_delete_rekap::nilai');
     }
 
     /**
-     * Determine whether the user can restore any models.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->checkPermissionTo('restore-any RekapNilai');
-    }
-
-    /**
-     * Determine whether the user can replicate the model.
-     */
-    public function replicate(User $user, RekapNilai $rekapnilai): bool
-    {
-        return $user->checkPermissionTo('replicate RekapNilai');
-    }
-
-    /**
-     * Determine whether the user can reorder the models.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->checkPermissionTo('reorder RekapNilai');
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, RekapNilai $rekapnilai): bool
-    {
-        return $user->checkPermissionTo('force-delete RekapNilai');
-    }
-
-    /**
-     * Determine whether the user can permanently delete any models.
+     * Determine whether the user can permanently bulk delete.
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('force-delete-any RekapNilai');
+        return $user->can('force_delete_any_rekap::nilai');
+    }
+
+    /**
+     * Determine whether the user can restore.
+     */
+    public function restore(User $user, RekapNilai $rekapNilai): bool
+    {
+        return $user->can('restore_rekap::nilai');
+    }
+
+    /**
+     * Determine whether the user can bulk restore.
+     */
+    public function restoreAny(User $user): bool
+    {
+        return $user->can('restore_any_rekap::nilai');
+    }
+
+    /**
+     * Determine whether the user can replicate.
+     */
+    public function replicate(User $user, RekapNilai $rekapNilai): bool
+    {
+        return $user->can('replicate_rekap::nilai');
+    }
+
+    /**
+     * Determine whether the user can reorder.
+     */
+    public function reorder(User $user): bool
+    {
+        return $user->can('reorder_rekap::nilai');
     }
 }

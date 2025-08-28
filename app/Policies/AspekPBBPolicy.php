@@ -2,26 +2,28 @@
 
 namespace App\Policies;
 
-use Illuminate\Auth\Access\Response;
-use App\Models\AspekPBB;
 use App\Models\User;
+use App\Models\AspekPBB;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class AspekPBBPolicy
 {
+    use HandlesAuthorization;
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->checkPermissionTo('view-any AspekPBB');
+        return $user->can('view_any_aspek::p::b::b');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, AspekPBB $aspekpbb): bool
+    public function view(User $user, AspekPBB $aspekPBB): bool
     {
-        return $user->checkPermissionTo('view AspekPBB');
+        return $user->can('view_aspek::p::b::b');
     }
 
     /**
@@ -29,78 +31,78 @@ class AspekPBBPolicy
      */
     public function create(User $user): bool
     {
-        return $user->checkPermissionTo('create AspekPBB');
+        return $user->can('create_aspek::p::b::b');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, AspekPBB $aspekpbb): bool
+    public function update(User $user, AspekPBB $aspekPBB): bool
     {
-        return $user->checkPermissionTo('update AspekPBB');
+        return $user->can('update_aspek::p::b::b');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, AspekPBB $aspekpbb): bool
+    public function delete(User $user, AspekPBB $aspekPBB): bool
     {
-        return $user->checkPermissionTo('delete AspekPBB');
+        return $user->can('delete_aspek::p::b::b');
     }
 
     /**
-     * Determine whether the user can delete any models.
+     * Determine whether the user can bulk delete.
      */
     public function deleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('delete-any AspekPBB');
+        return $user->can('delete_any_aspek::p::b::b');
     }
 
     /**
-     * Determine whether the user can restore the model.
+     * Determine whether the user can permanently delete.
      */
-    public function restore(User $user, AspekPBB $aspekpbb): bool
+    public function forceDelete(User $user, AspekPBB $aspekPBB): bool
     {
-        return $user->checkPermissionTo('restore AspekPBB');
+        return $user->can('force_delete_aspek::p::b::b');
     }
 
     /**
-     * Determine whether the user can restore any models.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->checkPermissionTo('restore-any AspekPBB');
-    }
-
-    /**
-     * Determine whether the user can replicate the model.
-     */
-    public function replicate(User $user, AspekPBB $aspekpbb): bool
-    {
-        return $user->checkPermissionTo('replicate AspekPBB');
-    }
-
-    /**
-     * Determine whether the user can reorder the models.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->checkPermissionTo('reorder AspekPBB');
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, AspekPBB $aspekpbb): bool
-    {
-        return $user->checkPermissionTo('force-delete AspekPBB');
-    }
-
-    /**
-     * Determine whether the user can permanently delete any models.
+     * Determine whether the user can permanently bulk delete.
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('force-delete-any AspekPBB');
+        return $user->can('force_delete_any_aspek::p::b::b');
+    }
+
+    /**
+     * Determine whether the user can restore.
+     */
+    public function restore(User $user, AspekPBB $aspekPBB): bool
+    {
+        return $user->can('restore_aspek::p::b::b');
+    }
+
+    /**
+     * Determine whether the user can bulk restore.
+     */
+    public function restoreAny(User $user): bool
+    {
+        return $user->can('restore_any_aspek::p::b::b');
+    }
+
+    /**
+     * Determine whether the user can replicate.
+     */
+    public function replicate(User $user, AspekPBB $aspekPBB): bool
+    {
+        return $user->can('replicate_aspek::p::b::b');
+    }
+
+    /**
+     * Determine whether the user can reorder.
+     */
+    public function reorder(User $user): bool
+    {
+        return $user->can('reorder_aspek::p::b::b');
     }
 }

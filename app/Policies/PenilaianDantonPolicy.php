@@ -2,26 +2,28 @@
 
 namespace App\Policies;
 
-use Illuminate\Auth\Access\Response;
-use App\Models\PenilaianDanton;
 use App\Models\User;
+use App\Models\PenilaianDanton;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class PenilaianDantonPolicy
 {
+    use HandlesAuthorization;
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->checkPermissionTo('view-any PenilaianDanton');
+        return $user->can('view_any_penilaian::danton');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, PenilaianDanton $penilaiandanton): bool
+    public function view(User $user, PenilaianDanton $penilaianDanton): bool
     {
-        return $user->checkPermissionTo('view PenilaianDanton');
+        return $user->can('view_penilaian::danton');
     }
 
     /**
@@ -29,78 +31,78 @@ class PenilaianDantonPolicy
      */
     public function create(User $user): bool
     {
-        return $user->checkPermissionTo('create PenilaianDanton');
+        return $user->can('create_penilaian::danton');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, PenilaianDanton $penilaiandanton): bool
+    public function update(User $user, PenilaianDanton $penilaianDanton): bool
     {
-        return $user->checkPermissionTo('update PenilaianDanton');
+        return $user->can('update_penilaian::danton');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, PenilaianDanton $penilaiandanton): bool
+    public function delete(User $user, PenilaianDanton $penilaianDanton): bool
     {
-        return $user->checkPermissionTo('delete PenilaianDanton');
+        return $user->can('delete_penilaian::danton');
     }
 
     /**
-     * Determine whether the user can delete any models.
+     * Determine whether the user can bulk delete.
      */
     public function deleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('delete-any PenilaianDanton');
+        return $user->can('delete_any_penilaian::danton');
     }
 
     /**
-     * Determine whether the user can restore the model.
+     * Determine whether the user can permanently delete.
      */
-    public function restore(User $user, PenilaianDanton $penilaiandanton): bool
+    public function forceDelete(User $user, PenilaianDanton $penilaianDanton): bool
     {
-        return $user->checkPermissionTo('restore PenilaianDanton');
+        return $user->can('force_delete_penilaian::danton');
     }
 
     /**
-     * Determine whether the user can restore any models.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->checkPermissionTo('restore-any PenilaianDanton');
-    }
-
-    /**
-     * Determine whether the user can replicate the model.
-     */
-    public function replicate(User $user, PenilaianDanton $penilaiandanton): bool
-    {
-        return $user->checkPermissionTo('replicate PenilaianDanton');
-    }
-
-    /**
-     * Determine whether the user can reorder the models.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->checkPermissionTo('reorder PenilaianDanton');
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, PenilaianDanton $penilaiandanton): bool
-    {
-        return $user->checkPermissionTo('force-delete PenilaianDanton');
-    }
-
-    /**
-     * Determine whether the user can permanently delete any models.
+     * Determine whether the user can permanently bulk delete.
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('force-delete-any PenilaianDanton');
+        return $user->can('force_delete_any_penilaian::danton');
+    }
+
+    /**
+     * Determine whether the user can restore.
+     */
+    public function restore(User $user, PenilaianDanton $penilaianDanton): bool
+    {
+        return $user->can('restore_penilaian::danton');
+    }
+
+    /**
+     * Determine whether the user can bulk restore.
+     */
+    public function restoreAny(User $user): bool
+    {
+        return $user->can('restore_any_penilaian::danton');
+    }
+
+    /**
+     * Determine whether the user can replicate.
+     */
+    public function replicate(User $user, PenilaianDanton $penilaianDanton): bool
+    {
+        return $user->can('replicate_penilaian::danton');
+    }
+
+    /**
+     * Determine whether the user can reorder.
+     */
+    public function reorder(User $user): bool
+    {
+        return $user->can('reorder_penilaian::danton');
     }
 }

@@ -2,26 +2,28 @@
 
 namespace App\Policies;
 
-use Illuminate\Auth\Access\Response;
-use App\Models\AspekTataRias;
 use App\Models\User;
+use App\Models\AspekTataRias;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class AspekTataRiasPolicy
 {
+    use HandlesAuthorization;
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->checkPermissionTo('view-any AspekTataRias');
+        return $user->can('view_any_aspek::tata::rias');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, AspekTataRias $aspektatarias): bool
+    public function view(User $user, AspekTataRias $aspekTataRias): bool
     {
-        return $user->checkPermissionTo('view AspekTataRias');
+        return $user->can('view_aspek::tata::rias');
     }
 
     /**
@@ -29,78 +31,78 @@ class AspekTataRiasPolicy
      */
     public function create(User $user): bool
     {
-        return $user->checkPermissionTo('create AspekTataRias');
+        return $user->can('create_aspek::tata::rias');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, AspekTataRias $aspektatarias): bool
+    public function update(User $user, AspekTataRias $aspekTataRias): bool
     {
-        return $user->checkPermissionTo('update AspekTataRias');
+        return $user->can('update_aspek::tata::rias');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, AspekTataRias $aspektatarias): bool
+    public function delete(User $user, AspekTataRias $aspekTataRias): bool
     {
-        return $user->checkPermissionTo('delete AspekTataRias');
+        return $user->can('delete_aspek::tata::rias');
     }
 
     /**
-     * Determine whether the user can delete any models.
+     * Determine whether the user can bulk delete.
      */
     public function deleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('delete-any AspekTataRias');
+        return $user->can('delete_any_aspek::tata::rias');
     }
 
     /**
-     * Determine whether the user can restore the model.
+     * Determine whether the user can permanently delete.
      */
-    public function restore(User $user, AspekTataRias $aspektatarias): bool
+    public function forceDelete(User $user, AspekTataRias $aspekTataRias): bool
     {
-        return $user->checkPermissionTo('restore AspekTataRias');
+        return $user->can('force_delete_aspek::tata::rias');
     }
 
     /**
-     * Determine whether the user can restore any models.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->checkPermissionTo('restore-any AspekTataRias');
-    }
-
-    /**
-     * Determine whether the user can replicate the model.
-     */
-    public function replicate(User $user, AspekTataRias $aspektatarias): bool
-    {
-        return $user->checkPermissionTo('replicate AspekTataRias');
-    }
-
-    /**
-     * Determine whether the user can reorder the models.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->checkPermissionTo('reorder AspekTataRias');
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, AspekTataRias $aspektatarias): bool
-    {
-        return $user->checkPermissionTo('force-delete AspekTataRias');
-    }
-
-    /**
-     * Determine whether the user can permanently delete any models.
+     * Determine whether the user can permanently bulk delete.
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->checkPermissionTo('force-delete-any AspekTataRias');
+        return $user->can('force_delete_any_aspek::tata::rias');
+    }
+
+    /**
+     * Determine whether the user can restore.
+     */
+    public function restore(User $user, AspekTataRias $aspekTataRias): bool
+    {
+        return $user->can('restore_aspek::tata::rias');
+    }
+
+    /**
+     * Determine whether the user can bulk restore.
+     */
+    public function restoreAny(User $user): bool
+    {
+        return $user->can('restore_any_aspek::tata::rias');
+    }
+
+    /**
+     * Determine whether the user can replicate.
+     */
+    public function replicate(User $user, AspekTataRias $aspekTataRias): bool
+    {
+        return $user->can('replicate_aspek::tata::rias');
+    }
+
+    /**
+     * Determine whether the user can reorder.
+     */
+    public function reorder(User $user): bool
+    {
+        return $user->can('reorder_aspek::tata::rias');
     }
 }
