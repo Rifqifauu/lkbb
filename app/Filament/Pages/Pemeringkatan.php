@@ -7,6 +7,8 @@ use App\Models\RekapNilai;
 
 class Pemeringkatan extends Page
 {
+        protected static ?string $navigationIcon = 'heroicon-o-trophy';
+
     protected static string $view = 'filament.pages.pemeringkatan';
 
     // Daftar aspek penilaian

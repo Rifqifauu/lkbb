@@ -15,7 +15,7 @@ class AspekVariasiFormasi extends BaseWidget
         $totalAspek = AspekModel::count();
         return [
             Stat::make('Total Nilai', number_format($totalNilai))
-                ->description('Akumulasi semua penilaian')
+                ->description('Nilai maksimal aspek penilaian')
                 ->color('success')
                 ->icon('heroicon-o-chart-bar'),
             Stat::make('Total Aspek', $totalAspek)
