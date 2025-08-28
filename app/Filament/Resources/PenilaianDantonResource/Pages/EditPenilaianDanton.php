@@ -33,11 +33,15 @@ class EditPenilaianDanton extends EditRecord
             $nilaiMapping = [
                 'kurang_1' => $aspek->kurang_1,
                 'kurang_2' => $aspek->kurang_2,
+                'kurang_3' => $aspek->kurang_3,
                 'cukup_1' => $aspek->cukup_1,
                 'cukup_2' => $aspek->cukup_2,
+                'cukup_3' => $aspek->cukup_3,
                 'baik_1' => $aspek->baik_1,
                 'baik_2' => $aspek->baik_2,
+                'baik_3' => $aspek->baik_3,
             ];
+
 
             $nilaiNumerik = $nilaiMapping[$item['nilai']] ?? null;
 

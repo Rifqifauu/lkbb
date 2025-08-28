@@ -9,12 +9,13 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Forms\Components\Grid;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Grid;
+
 
 class AspekTataRiasResource extends Resource
 {
@@ -23,7 +24,7 @@ class AspekTataRiasResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
     protected static ?string $navigationGroup = 'Aspek Penilaian';
 
-   public static function form(Form $form): Form
+    public static function form(Form $form): Form
 {
     return $form
         ->schema([
@@ -45,20 +46,30 @@ class AspekTataRiasResource extends Resource
                         ->label('Kurang 2')
                         ->required()
                         ->numeric(),
-
-                    TextInput::make('cukup_1')
-                        ->label('Cukup 1')
+                    TextInput::make('kurang_3')
+                        ->label('Kurang 3')
                         ->required()
                         ->numeric(),
                 ])->columnSpan(12),
 
                 // Baris 3
                 Grid::make(3)->schema([
+                    TextInput::make('cukup_1')
+                        ->label('Cukup 1')
+                        ->required()
+                        ->numeric(),
                     TextInput::make('cukup_2')
                         ->label('Cukup 2')
                         ->required()
                         ->numeric(),
-                    TextInput::make('baik_1')
+                        TextInput::make('cukup_3')
+                        ->label('Cukup 3')
+                        ->required()
+                        ->numeric(),
+               
+                ])->columnSpan(12),
+                Grid::make(3)->schema([
+                        TextInput::make('baik_1')
                         ->label('Baik 1')
                         ->required()
                         ->numeric(),
@@ -66,6 +77,11 @@ class AspekTataRiasResource extends Resource
                         ->label('Baik 2')
                         ->required()
                         ->numeric(),
+                    TextInput::make('baik_3')
+                        ->label('Baik 3')
+                        ->required()
+                        ->numeric(),
+               
                 ])->columnSpan(12),
             ]),
         ]);
@@ -88,6 +104,9 @@ class AspekTataRiasResource extends Resource
                 TextColumn::make('kurang_2')
                     ->label('Kurang 2')
                     ->sortable(),
+                TextColumn::make('kurang_3')
+                    ->label('Kurang 3')
+                    ->sortable(),
 
                 TextColumn::make('cukup_1')
                     ->label('Cukup 1')
@@ -96,6 +115,9 @@ class AspekTataRiasResource extends Resource
                 TextColumn::make('cukup_2')
                     ->label('Cukup 2')
                     ->sortable(),
+                TextColumn::make('cukup_3')
+                    ->label('Cukup 3')
+                    ->sortable(),
 
                 TextColumn::make('baik_1')
                     ->label('Baik 1')
@@ -103,6 +125,9 @@ class AspekTataRiasResource extends Resource
 
                 TextColumn::make('baik_2')
                     ->label('Baik 2')
+                    ->sortable(),
+                TextColumn::make('baik_3')
+                    ->label('Baik 3')
                     ->sortable(),
             ])
             ->filters([

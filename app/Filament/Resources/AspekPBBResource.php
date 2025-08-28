@@ -24,7 +24,6 @@ class AspekPBBResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
     protected static ?string $navigationGroup = 'Aspek Penilaian';
 
-    protected static ?string $navigationLabel = 'Aspek PBB';
     public static function form(Form $form): Form
 {
     return $form
@@ -47,20 +46,30 @@ class AspekPBBResource extends Resource
                         ->label('Kurang 2')
                         ->required()
                         ->numeric(),
-
-                    TextInput::make('cukup_1')
-                        ->label('Cukup 1')
+                    TextInput::make('kurang_3')
+                        ->label('Kurang 3')
                         ->required()
                         ->numeric(),
                 ])->columnSpan(12),
 
                 // Baris 3
                 Grid::make(3)->schema([
+                    TextInput::make('cukup_1')
+                        ->label('Cukup 1')
+                        ->required()
+                        ->numeric(),
                     TextInput::make('cukup_2')
                         ->label('Cukup 2')
                         ->required()
                         ->numeric(),
-                    TextInput::make('baik_1')
+                        TextInput::make('cukup_3')
+                        ->label('Cukup 3')
+                        ->required()
+                        ->numeric(),
+               
+                ])->columnSpan(12),
+                Grid::make(3)->schema([
+                        TextInput::make('baik_1')
                         ->label('Baik 1')
                         ->required()
                         ->numeric(),
@@ -68,6 +77,11 @@ class AspekPBBResource extends Resource
                         ->label('Baik 2')
                         ->required()
                         ->numeric(),
+                    TextInput::make('baik_3')
+                        ->label('Baik 3')
+                        ->required()
+                        ->numeric(),
+               
                 ])->columnSpan(12),
             ]),
         ]);
@@ -90,6 +104,9 @@ class AspekPBBResource extends Resource
                 TextColumn::make('kurang_2')
                     ->label('Kurang 2')
                     ->sortable(),
+                TextColumn::make('kurang_3')
+                    ->label('Kurang 3')
+                    ->sortable(),
 
                 TextColumn::make('cukup_1')
                     ->label('Cukup 1')
@@ -98,6 +115,9 @@ class AspekPBBResource extends Resource
                 TextColumn::make('cukup_2')
                     ->label('Cukup 2')
                     ->sortable(),
+                TextColumn::make('cukup_3')
+                    ->label('Cukup 3')
+                    ->sortable(),
 
                 TextColumn::make('baik_1')
                     ->label('Baik 1')
@@ -105,6 +125,9 @@ class AspekPBBResource extends Resource
 
                 TextColumn::make('baik_2')
                     ->label('Baik 2')
+                    ->sortable(),
+                TextColumn::make('baik_3')
+                    ->label('Baik 3')
                     ->sortable(),
             ])
             ->filters([
@@ -119,6 +142,7 @@ class AspekPBBResource extends Resource
                 ]),
             ]);
     }
+
     public static function getRelations(): array
     {
         return [
@@ -129,7 +153,7 @@ class AspekPBBResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListAspekPBBS::route('/'),
+            'index' => Pages\ListAspekPBBs::route('/'),
             'create' => Pages\CreateAspekPBB::route('/create'),
             'edit' => Pages\EditAspekPBB::route('/{record}/edit'),
         ];

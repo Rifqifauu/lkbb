@@ -16,10 +16,13 @@ return new class extends Migration
             $table->string('nama_penilaian');
              $table->integer('kurang_1');
             $table->integer('kurang_2');
+            $table->integer('kurang_3');
             $table->integer('cukup_1');
             $table->integer('cukup_2');
+            $table->integer('cukup_3');
             $table->integer('baik_1');
             $table->integer('baik_2');
+            $table->integer('baik_3');
             $table->timestamps();
         });
     }

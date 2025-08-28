@@ -40,11 +40,7 @@ class PenguranganNilaiResource extends Resource
                     ->options(function () {
                         return AspekPenguranganNilai::pluck('nama_penilaian', 'id')->toArray();
                     }),
-                TextInput::make('nilai')
-                    ->label('Nilai Pengurangan')
-                    ->numeric()
-                    ->required()
-                    ->default(0)
+
             ]);
     }
 

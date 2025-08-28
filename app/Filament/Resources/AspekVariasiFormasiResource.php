@@ -3,24 +3,28 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\AspekVariasiFormasiResource\Pages;
+use App\Filament\Resources\AspekVariasiFormasiResource\RelationManagers;
 use App\Models\AspekVariasiFormasi;
 use Filament\Forms;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Grid;
 
+
 class AspekVariasiFormasiResource extends Resource
 {
     protected static ?string $model = AspekVariasiFormasi::class;
-    protected static ?string $navigationGroup = 'Aspek Penilaian';
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
 
-   public static function form(Form $form): Form
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static ?string $navigationGroup = 'Aspek Penilaian';
+
+    public static function form(Form $form): Form
 {
     return $form
         ->schema([
@@ -42,20 +46,30 @@ class AspekVariasiFormasiResource extends Resource
                         ->label('Kurang 2')
                         ->required()
                         ->numeric(),
-
-                    TextInput::make('cukup_1')
-                        ->label('Cukup 1')
+                    TextInput::make('kurang_3')
+                        ->label('Kurang 3')
                         ->required()
                         ->numeric(),
                 ])->columnSpan(12),
 
                 // Baris 3
                 Grid::make(3)->schema([
+                    TextInput::make('cukup_1')
+                        ->label('Cukup 1')
+                        ->required()
+                        ->numeric(),
                     TextInput::make('cukup_2')
                         ->label('Cukup 2')
                         ->required()
                         ->numeric(),
-                    TextInput::make('baik_1')
+                        TextInput::make('cukup_3')
+                        ->label('Cukup 3')
+                        ->required()
+                        ->numeric(),
+               
+                ])->columnSpan(12),
+                Grid::make(3)->schema([
+                        TextInput::make('baik_1')
                         ->label('Baik 1')
                         ->required()
                         ->numeric(),
@@ -63,6 +77,11 @@ class AspekVariasiFormasiResource extends Resource
                         ->label('Baik 2')
                         ->required()
                         ->numeric(),
+                    TextInput::make('baik_3')
+                        ->label('Baik 3')
+                        ->required()
+                        ->numeric(),
+               
                 ])->columnSpan(12),
             ]),
         ]);
@@ -85,6 +104,9 @@ class AspekVariasiFormasiResource extends Resource
                 TextColumn::make('kurang_2')
                     ->label('Kurang 2')
                     ->sortable(),
+                TextColumn::make('kurang_3')
+                    ->label('Kurang 3')
+                    ->sortable(),
 
                 TextColumn::make('cukup_1')
                     ->label('Cukup 1')
@@ -93,6 +115,9 @@ class AspekVariasiFormasiResource extends Resource
                 TextColumn::make('cukup_2')
                     ->label('Cukup 2')
                     ->sortable(),
+                TextColumn::make('cukup_3')
+                    ->label('Cukup 3')
+                    ->sortable(),
 
                 TextColumn::make('baik_1')
                     ->label('Baik 1')
@@ -100,6 +125,9 @@ class AspekVariasiFormasiResource extends Resource
 
                 TextColumn::make('baik_2')
                     ->label('Baik 2')
+                    ->sortable(),
+                TextColumn::make('baik_3')
+                    ->label('Baik 3')
                     ->sortable(),
             ])
             ->filters([
@@ -117,14 +145,17 @@ class AspekVariasiFormasiResource extends Resource
 
     public static function getRelations(): array
     {
-        return [];
+        return [
+            //
+        ];
     }
 
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListAspekVariasiFormasis::route('/'),
-
+            'create' => Pages\CreateAspekVariasiFormasi::route('/create'),
+            'edit' => Pages\EditAspekVariasiFormasi::route('/{record}/edit'),
         ];
     }
 }

@@ -10,12 +10,8 @@ class AspekVariasiFormasi extends BaseWidget
 {
     protected function getStats(): array
     {
-        $totalNilai = AspekModel::sum('kurang_1')
-            + AspekModel::sum('kurang_2')
-            + AspekModel::sum('cukup_1')
-            + AspekModel::sum('cukup_2')
-            + AspekModel::sum('baik_1')
-            + AspekModel::sum('baik_2');
+        $totalNilai = AspekModel::sum('baik_3');
+     
         $totalAspek = AspekModel::count();
         return [
             Stat::make('Total Nilai', number_format($totalNilai))

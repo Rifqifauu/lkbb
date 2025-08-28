@@ -20,7 +20,6 @@ class CreateRekapNilai extends CreateRecord
 
     public function handleRecordCreation(array $data): Model
     {
-        // Fetch individual sums for each criterion model
         $nilai_pbb = PenilaianPBB::where('id_peserta', $data['id_peserta'])->average('nilai');
         $nilai_danton = PenilaianDanton::where('id_peserta', $data['id_peserta'])->average('nilai'); // Sum of nilai_danton from PenilaianDanton
         $nilai_kostum = PenilaianSeragam::where('id_peserta', $data['id_peserta'])->average('nilai'); // Sum of nilai_kostum from PenilaianKostum
