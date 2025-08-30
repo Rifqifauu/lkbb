@@ -25,4 +25,29 @@ class RekapNilai extends Model
     {
         return $this->belongsTo(Peserta::class, 'id_peserta');
     }
+    public function penilaianPbb()
+{
+    return $this->hasMany(PenilaianPBB::class, 'id_peserta', 'id_peserta');
+}
+
+public function penilaianDanton()
+{
+    return $this->hasMany(PenilaianDanton::class, 'id_peserta', 'id_peserta');
+}
+
+public function penilaianSeragam()
+{
+    return $this->hasMany(PenilaianSeragam::class, 'id_peserta', 'id_peserta');
+}
+
+public function penilaianTataRias()
+{
+    return $this->hasMany(PenilaianTataRias::class, 'id_peserta', 'id_peserta');
+}
+
+public function penilaianVariasiFormasi()
+{
+    return $this->hasMany(PenilaianVariasiFormasi::class, 'id_peserta', 'id_peserta');
+}
+
 }

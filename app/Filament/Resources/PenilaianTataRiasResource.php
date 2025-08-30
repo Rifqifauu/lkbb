@@ -33,12 +33,19 @@ class PenilaianTataRiasResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Select::make('id_peserta')
-                ->label('Pilih Peserta')
-                ->options(Peserta::pluck('nama', 'id')->toArray())
-                ->searchable()
-                ->required()
-                ->columnSpanFull(),
+         Select::make('id_peserta')
+    ->label('Pilih Peserta')
+    ->options(function () {
+        return Peserta::whereDoesntHave('penilaianTataRias', function ($query) {
+            $query->where('id_user', auth()->id());
+        })
+        ->pluck('nama', 'id')
+        ->toArray();
+    })
+    ->searchable()
+    ->required()
+    ->columnSpanFull(),
+
 
          Repeater::make('penilaian_items')
     ->label('Penilaian Per Aspek')
@@ -97,77 +104,75 @@ class PenilaianTataRiasResource extends Resource
     }
 
     public static function table(Table $table): Table
-    {
-        $columns = [
-            Tables\Columns\TextColumn::make('peserta.nama')
-                ->label('Peserta')
-                ->searchable()
-                ->sortable(),
+{
+    $columns = [
+        Tables\Columns\TextColumn::make('peserta.nama')
+            ->label('Peserta')
+            ->searchable()
+            ->sortable(),
 
-            Tables\Columns\TextColumn::make('penilai.name')
-                ->label('Penilai')
-                ->searchable()
-                ->sortable(),
-        ];
+        Tables\Columns\TextColumn::make('penilai.name')
+            ->label('Penilai')
+            ->searchable()
+            ->sortable(),
+    ];
 
-        // Tambahkan kolom dinamis sesuai aspek
-        foreach (AspekTataRias::all() as $aspek) {
-            $columns[] = Tables\Columns\TextColumn::make("aspek_{$aspek->id}")
-                ->label($aspek->nama_penilaian)
-                ->getStateUsing(function ($record) use ($aspek) {
-                    $penilaian = PenilaianTataRias::where('id_peserta', $record->id_peserta)
-                        ->where('id_user', $record->id_user)
-                        ->where('id_aspek', $aspek->id)
-                        ->first();
+    // Tambahkan kolom dinamis sesuai aspek
+    foreach (AspekTataRias::all() as $aspek) {
+        $columns[] = Tables\Columns\TextColumn::make("aspek_{$aspek->id}")
+            ->label($aspek->nama_penilaian)
+            ->getStateUsing(function ($record) use ($aspek) {
+                // ambil dari relasi peserta -> penilaianTataRias (sudah di-load)
+                $penilaian = $record->peserta->penilaianTataRias
+                    ->where('id_user', auth()->id())
+                    ->firstWhere('id_aspek', $aspek->id);
 
-                    if ($penilaian && $penilaian->nilai) {
-                        return match ($penilaian->nilai) {
-                            'kurang_1' => $aspek->kurang_1 ?? 0,
-                            'kurang_2' => $aspek->kurang_2 ?? 0,
-                            'kurang_3' => $aspek->kurang_3 ?? 0,
-                            'cukup_1'  => $aspek->cukup_1 ?? 0,
-                            'cukup_2'  => $aspek->cukup_2 ?? 0,
-                            'cukup_3'  => $aspek->cukup_3 ?? 0,
-                            'baik_1'   => $aspek->baik_1 ?? 0,
-                            'baik_2'   => $aspek->baik_2 ?? 0,
-                            'baik_3'   => $aspek->baik_3 ?? 0,
-                            default    => $penilaian->nilai,
-                        };
-                    }
+                if ($penilaian && $penilaian->nilai) {
+                    return match ($penilaian->nilai) {
+                        'kurang_1' => $aspek->kurang_1 ?? 0,
+                        'kurang_2' => $aspek->kurang_2 ?? 0,
+                        'kurang_3' => $aspek->kurang_3 ?? 0,
+                        'cukup_1'  => $aspek->cukup_1 ?? 0,
+                        'cukup_2'  => $aspek->cukup_2 ?? 0,
+                        'cukup_3'  => $aspek->cukup_3 ?? 0,
+                        'baik_1'   => $aspek->baik_1 ?? 0,
+                        'baik_2'   => $aspek->baik_2 ?? 0,
+                        'baik_3'   => $aspek->baik_3 ?? 0,
+                        default    => $penilaian->nilai,
+                    };
+                }
 
-                    return '-';
-                })
-                ->alignCenter();
-        }
-
-        return $table
-            ->query(
-                PenilaianTataRias::with(['peserta', 'penilai', 'aspek'])
-                    ->orderBy('id_peserta')
-                    ->orderBy('id_user')
-            )
-            ->modifyQueryUsing(function (Builder $query) {
-                return $query->whereIn('id', function ($subQuery) {
-                    $subQuery->selectRaw('MIN(id)')
-                        ->from('penilaian_tata_rias')
-                        ->groupBy('id_peserta', 'id_user');
-                });
+                return '-';
             })
-            ->columns($columns)
-            ->filters([
-                Tables\Filters\SelectFilter::make('id_peserta')
-                    ->label('Filter Peserta')
-                    ->options(Peserta::pluck('nama', 'id')->toArray()),
-            ])
-            ->actions([
-                Tables\Actions\DeleteAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->alignCenter();
     }
+
+    return $table
+        ->query(
+            PenilaianTataRias::with([
+                'peserta.penilaianTataRias', // load semua penilaian peserta
+                'penilai',
+                'aspek'
+            ])
+            ->where('id_user', auth()->id()) // hanya penilai login
+            ->orderBy('id_peserta')
+        )
+        ->columns($columns)
+        ->filters([
+            Tables\Filters\SelectFilter::make('id_peserta')
+                ->label('Filter Peserta')
+                ->options(Peserta::pluck('nama', 'id')->toArray()),
+        ])
+        ->actions([
+            Tables\Actions\DeleteAction::make(),
+        ])
+        ->bulkActions([
+            Tables\Actions\BulkActionGroup::make([
+                Tables\Actions\DeleteBulkAction::make(),
+            ]),
+        ]);
+}
+
 
     public static function getRelations(): array
     {

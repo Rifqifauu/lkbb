@@ -25,7 +25,7 @@ class CreateRekapNilai extends CreateRecord
         $nilai_kostum = PenilaianSeragam::where('id_peserta', $data['id_peserta'])->average('nilai'); // Sum of nilai_kostum from PenilaianKostum
         $nilai_tata_rias = PenilaianTataRias::where('id_peserta', $data['id_peserta'])->average('nilai'); // Sum of nilai_tata_rias from PenilaianTataRias
         $nilai_variasi_formasi = PenilaianVariasiFormasi::where('id_peserta', $data['id_peserta'])->average('nilai'); // Sum of nilai_penampilan from PenilaianPenampilan
-$nilai_pengurangan = PenguranganNilai::where('id_peserta', $data['id_peserta'])
+        $nilai_pengurangan = PenguranganNilai::where('id_peserta', $data['id_peserta'])
     ->with('aspek') // Pastikan relasi 'aspek' dimuat
     ->get()
     ->avg(function($pengurangan) {
@@ -34,7 +34,7 @@ $nilai_pengurangan = PenguranganNilai::where('id_peserta', $data['id_peserta'])
 
         // Calculate totals
           $total_utama = $nilai_pbb + $nilai_danton - $nilai_pengurangan;
-            $total_umum = $nilai_pbb + $nilai_danton + $nilai_variasi_formasi + $nilai_kostum;
+         $total_umum = $nilai_pbb + $nilai_danton + $nilai_variasi_formasi + $nilai_kostum;
 
         // Create the RekapNilai record
         $rekapNilai = RekapNilai::create([

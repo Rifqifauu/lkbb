@@ -1,7 +1,9 @@
 <?php
 
 namespace App\Filament\Pages;
-
+  use Filament\Actions\Action;
+use App\Exports\PemeringkatanExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Filament\Pages\Page;
 use App\Models\RekapNilai;
 
@@ -48,4 +50,16 @@ class Pemeringkatan extends Page
         }
         return $result;
     }
+  
+
+protected function getHeaderActions(): array
+{
+    return [
+        Action::make('export')
+            ->label('Export Excel')
+            ->color('success')
+            ->action(fn () => Excel::download(new PemeringkatanExport, 'pemeringkatan.xlsx')),
+    ];
+}
+
 }

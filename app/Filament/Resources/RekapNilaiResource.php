@@ -4,11 +4,11 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\RekapNilaiResource\Pages;
 use App\Models\RekapNilai;
-use App\Models\Peserta;  // Ensure Peserta model is included
+use App\Models\Peserta;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\TimePicker;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -23,17 +23,12 @@ class RekapNilaiResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-table-cells';
     protected static ?string $navigationLabel = 'Rekap Nilai';
 
-    /**
-     * Define the form schema for RekapNilai resource.
-     */
     public static function form(Forms\Form $form): Forms\Form
     {
         return $form
             ->schema([
                 Select::make('id_peserta')
-                    ->options(function () {
-                        return Peserta::pluck('nama', 'id'); // Ensure Peserta model is being used correctly
-                    })
+                    ->options(fn () => Peserta::pluck('nama', 'id'))
                     ->required()
                     ->label('Peserta'),
 
@@ -44,48 +39,75 @@ class RekapNilaiResource extends Resource
             ]);
     }
 
-    /**
-     * Define the table schema for displaying RekapNilai records.
-     */
     public static function table(Table $table): Table
     {
+        // Kolom default
+        $columns = [
+            TextColumn::make('peserta.nama')
+                ->label('Peserta')
+                ->sortable(),
+
+            TextColumn::make('waktu')
+                ->label('Waktu')
+                ->sortable()
+                ->suffix(' Menit'),
+        ];
+
+        // Ambil semua juri dari tabel users
+        $juris = User::all();
+
+        foreach ($juris as $juri) {
+            // Nilai PBB per juri
+            $columns[] = TextColumn::make('pbb_' . $juri->id)
+                ->label('Nilai PBB (' . $juri->name . ')')
+                ->getStateUsing(fn ($record) =>
+                    optional($record->penilaianPbb->firstWhere('id_user', $juri->id))->nilai
+                );
+
+            // Nilai Danton per juri
+            $columns[] = TextColumn::make('danton_' . $juri->id)
+                ->label('Nilai Danton (' . $juri->name . ')')
+                ->getStateUsing(fn ($record) =>
+                    optional($record->penilaianDanton->firstWhere('id_user', $juri->id))->nilai
+                );
+
+            // Nilai Kostum per juri
+            $columns[] = TextColumn::make('kostum_' . $juri->id)
+                ->label('Nilai Kostum (' . $juri->name . ')')
+                ->getStateUsing(fn ($record) =>
+                    optional($record->penilaianSeragam->firstWhere('id_user', $juri->id))->nilai
+                );
+
+            // Nilai Tata Rias per juri
+            $columns[] = TextColumn::make('tata_rias_' . $juri->id)
+                ->label('Nilai Tata Rias (' . $juri->name . ')')
+                ->getStateUsing(fn ($record) =>
+                    optional($record->penilaianTataRias->firstWhere('id_user', $juri->id))->nilai
+                );
+
+            // Nilai Variasi Formasi per juri
+            $columns[] = TextColumn::make('variasi_formasi_' . $juri->id)
+                ->label('Nilai Variasi Formasi (' . $juri->name . ')')
+                ->getStateUsing(fn ($record) =>
+                    optional($record->penilaianVariasiFormasi->firstWhere('id_user', $juri->id))->nilai
+                );
+        }
+
+        // Kolom rata-rata + total
+        $columns = array_merge($columns, [
+            TextColumn::make('nilai_pbb')->label('Rata-rata PBB')->sortable(),
+            TextColumn::make('nilai_danton')->label('Rata-rata Danton')->sortable(),
+            TextColumn::make('nilai_kostum')->label('Rata-rata Kostum')->sortable(),
+            TextColumn::make('nilai_tata_rias')->label('Rata-rata Tata Rias')->sortable(),
+            TextColumn::make('nilai_variasi_formasi')->label('Rata-rata Variasi Formasi')->sortable(),
+            TextColumn::make('nilai_pengurangan')->label('Pengurangan')->sortable(),
+            TextColumn::make('total_utama')->label('Total Utama')->sortable(),
+            TextColumn::make('total_umum')->label('Total Umum')->sortable(),
+        ]);
+
         return $table
-            ->columns([
-                TextColumn::make('peserta.nama')
-                    ->label('Peserta')
-                    ->sortable(),
-                TextColumn::make('waktu')
-                    ->label('Waktu')
-                    ->sortable()
-                    ->suffix(' Menit'),
-                    TextColumn::make('nilai_pbb')
-                    ->label('Nilai PBB')
-                    ->sortable(),
-                TextColumn::make('nilai_danton')
-                    ->label('Nilai Danton')
-                    ->sortable(),
-                TextColumn::make('nilai_kostum')
-                    ->label('Nilai Kostum')
-                    ->sortable(),
-                TextColumn::make('nilai_tata_rias')
-                    ->label('Nilai Tata Rias')
-                    ->sortable(),
-                TextColumn::make('nilai_variasi_formasi')
-                    ->label('Nilai Variasi Formasi')
-                    ->sortable(),
-                TextColumn::make('nilai_pengurangan')
-                    ->label('Nilai Pengurangan')
-                    ->sortable(),
-                TextColumn::make('total_utama')
-                    ->label('Total Utama')
-                    ->sortable(),
-                TextColumn::make('total_umum')
-                    ->label('Total Umum')
-                    ->sortable(),
-            ])
-            ->filters([
-                // Add any filters if needed
-            ])
+            ->columns($columns)
+            ->filters([])
             ->actions([
                 EditAction::make(),
             ])
@@ -94,17 +116,11 @@ class RekapNilaiResource extends Resource
             ]);
     }
 
-    /**
-     * Define plural label for the resource.
-     */
     public static function getPluralLabel(): string
     {
         return 'Rekap Nilai';
     }
 
-    /**
-     * Define pages for this resource.
-     */
     public static function getPages(): array
     {
         return [
