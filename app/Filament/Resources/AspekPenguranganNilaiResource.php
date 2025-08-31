@@ -24,7 +24,16 @@ class AspekPenguranganNilaiResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
     protected static ?string $navigationGroup = 'Aspek Penilaian';
 
-    protected static ?string $navigationLabel = 'Aspek Pengurangan Nilai';
+    protected static ?string $navigationLabel = 'Formulasi Pengurangan Nilai';
+    public static function getModelLabel(): string
+    {
+        return 'Formulasi Pengurangan Nilai:'; // judul singular
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Formulasi Pengurangan Nilai:'; // judul plural (List)
+    }
     public static function form(Form $form): Form
 {
     return $form

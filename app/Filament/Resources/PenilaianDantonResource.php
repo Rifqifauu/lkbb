@@ -13,12 +13,11 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Radio;
+use Illuminate\Support\Facades\Auth;
 
 class PenilaianDantonResource extends Resource
 {
@@ -35,64 +34,57 @@ class PenilaianDantonResource extends Resource
         return $form->schema([
             Select::make('id_peserta')
                 ->label('Pilih Peserta')
-                ->options(Peserta::pluck('nama', 'id')->toArray())
+                ->options(Peserta::orderBy('nama')->pluck('nama', 'id')->toArray())
                 ->searchable()
                 ->required()
+                ->disabledOn('edit')
                 ->columnSpanFull(),
 
-         Repeater::make('penilaian_items')
-    ->label('Penilaian Per Aspek')
-    ->schema([
-        Hidden::make('id_aspek'),
+            Repeater::make('penilaian_items')
+                ->label('Penilaian Per Aspek')
+                ->schema([
+                    Hidden::make('id_aspek'),
+                    Forms\Components\Section::make(function (callable $get) {
+                        $aspek = AspekDanton::find($get('id_aspek'));
+                        return $aspek?->nama_penilaian ?? 'Aspek Penilaian';
+                    })->schema([
+                        Radio::make('nilai')
+                            ->label('Pilih Nilai')
+                            ->options(function (callable $get) {
+                                $aspekId = $get('id_aspek');
+                                if (!$aspekId) return [];
+                                $a = AspekDanton::find($aspekId);
+                                if (!$a) return [];
 
-        Forms\Components\Section::make(function (callable $get) {
-            $aspek = AspekDanton::find($get('id_aspek'));
-            return $aspek?->nama_penilaian ?? 'Aspek Penilaian';
-        })
-        ->schema([
-            Radio::make('nilai')
-                ->label('Pilih Nilai')
-                ->options(function (callable $get) {
-                    $aspekId = $get('id_aspek');
-                    if (!$aspekId) return [];
-
-                    $aspek = AspekDanton::find($aspekId);
-                    if (!$aspek) return [];
-
-                    return [
-                        'kurang_1' => "Kurang 1 ({$aspek->kurang_1} poin)",
-                        'kurang_2' => "Kurang 2 ({$aspek->kurang_2} poin)",
-                        'kurang_3' => "Kurang 3 ({$aspek->kurang_3} poin)",
-                        'cukup_1'  => "Cukup 1 ({$aspek->cukup_1} poin)",
-                        'cukup_2'  => "Cukup 2 ({$aspek->cukup_2} poin)",
-                        'cukup_3'  => "Cukup 3 ({$aspek->cukup_3} poin)",
-                        'baik_1'   => "Baik 1 ({$aspek->baik_1} poin)",
-                        'baik_2'   => "Baik 2 ({$aspek->baik_2} poin)",
-                        'baik_3'   => "Baik 3 ({$aspek->baik_3} poin)",
-                    ];
-                })
-                ->required()
-                ->columns([
-                    'default' => 1, // HP → 2 kolom
-                    'sm' => 3,      // Tablet → 3 kolom
-                    'lg' => 3,      // Desktop → 3 kolom
+                                return [
+                                    $a->kurang_1 => "Kurang 1 ({$a->kurang_1} poin)",
+                                    $a->kurang_2 => "Kurang 2 ({$a->kurang_2} poin)",
+                                    $a->kurang_3 => "Kurang 3 ({$a->kurang_3} poin)",
+                                    $a->cukup_1  => "Cukup 1 ({$a->cukup_1} poin)",
+                                    $a->cukup_2  => "Cukup 2 ({$a->cukup_2} poin)",
+                                    $a->cukup_3  => "Cukup 3 ({$a->cukup_3} poin)",
+                                    $a->baik_1   => "Baik 1 ({$a->baik_1} poin)",
+                                    $a->baik_2   => "Baik 2 ({$a->baik_2} poin)",
+                                    $a->baik_3   => "Baik 3 ({$a->baik_3} poin)",
+                                ];
+                            })
+                            ->nullable()
+                            ->columns(['default' => 1, 'sm' => 3, 'lg' => 3])
+                            ->inline(false),
+                    ]),
                 ])
-                ->inline(false), // biar tampil rapih per baris
-        ]),
-    ])
-    ->disableItemCreation()
-    ->disableItemDeletion()
-    ->disableItemMovement()
-    ->collapsible()
-    ->default(function () {
-        return AspekDanton::all()->map(fn ($aspek) => [
-            'id_aspek' => $aspek->id,
-            'nama_aspek' => $aspek->nama_penilaian,
-            'nilai' => null,
-        ])->toArray();
-    })
-    ->columnSpanFull(),
-
+                ->disableItemCreation()
+                ->disableItemDeletion()
+                ->disableItemMovement()
+                ->collapsible()
+                ->default(
+                    fn() =>
+                    AspekDanton::all()->map(fn($a) => [
+                        'id_aspek' => $a->id,
+                        'nilai'    => null,
+                    ])->toArray()
+                )
+                ->columnSpanFull(),
         ]);
     }
 
@@ -110,49 +102,57 @@ class PenilaianDantonResource extends Resource
                 ->sortable(),
         ];
 
-        // Tambahkan kolom dinamis sesuai aspek
         foreach (AspekDanton::all() as $aspek) {
             $columns[] = Tables\Columns\TextColumn::make("aspek_{$aspek->id}")
                 ->label($aspek->nama_penilaian)
                 ->getStateUsing(function ($record) use ($aspek) {
-                    $penilaian = PenilaianDanton::where('id_peserta', $record->id_peserta)
+                    $nilai = PenilaianDanton::where('id_peserta', $record->id_peserta)
                         ->where('id_user', $record->id_user)
                         ->where('id_aspek', $aspek->id)
-                        ->first();
+                        ->value('nilai');
 
-                    if ($penilaian && $penilaian->nilai) {
-                        return match ($penilaian->nilai) {
-                            'kurang_1' => $aspek->kurang_1 ?? 0,
-                            'kurang_2' => $aspek->kurang_2 ?? 0,
-                            'kurang_3' => $aspek->kurang_3 ?? 0,
-                            'cukup_1'  => $aspek->cukup_1 ?? 0,
-                            'cukup_2'  => $aspek->cukup_2 ?? 0,
-                            'cukup_3'  => $aspek->cukup_3 ?? 0,
-                            'baik_1'   => $aspek->baik_1 ?? 0,
-                            'baik_2'   => $aspek->baik_2 ?? 0,
-                            'baik_3'   => $aspek->baik_3 ?? 0,
-                            default    => $penilaian->nilai,
-                        };
-                    }
+                    if ($nilai === null || $nilai === '') return '-';
 
-                    return '-';
+                    if (is_numeric($nilai)) return (string) $nilai;
+
+                    return match ($nilai) {
+                        'kurang_1' => $aspek->kurang_1 ?? 0,
+                        'kurang_2' => $aspek->kurang_2 ?? 0,
+                        'kurang_3' => $aspek->kurang_3 ?? 0,
+                        'cukup_1'  => $aspek->cukup_1  ?? 0,
+                        'cukup_2'  => $aspek->cukup_2  ?? 0,
+                        'cukup_3'  => $aspek->cukup_3  ?? 0,
+                        'baik_1'   => $aspek->baik_1   ?? 0,
+                        'baik_2'   => $aspek->baik_2   ?? 0,
+                        'baik_3'   => $aspek->baik_3   ?? 0,
+                        default    => (string) $nilai,
+                    };
                 })
                 ->alignCenter();
         }
 
         return $table
             ->query(
-                PenilaianDanton::with(['peserta', 'penilai', 'aspek'])
-                    ->orderBy('id_peserta')
-                    ->orderBy('id_user')
+                PenilaianDanton::query()->with(['peserta', 'penilai', 'aspek'])
             )
             ->modifyQueryUsing(function (Builder $query) {
-                return $query->whereIn('id', function ($subQuery) {
-                    $subQuery->selectRaw('MIN(id)')
-                        ->from('penilaian_danton')
-                        ->groupBy('id_peserta', 'id_user');
-                });
+                $user    = Auth::user();
+                $isAdmin = $user->hasAnyRole('super_admin', 'admin panitia')
+                    || $user->can('view all penilaian');
+
+                if (! $isAdmin) {
+                    $query->where('id_user', $user->id);
+                }
+
+                $tableName = (new PenilaianDanton)->getTable();
+
+                $query->selectRaw("MIN(id) AS id, id_peserta, id_user")
+                    ->from($tableName)
+                    ->groupBy('id_peserta', 'id_user')
+                    ->orderBy('id_peserta')
+                    ->orderBy('id_user');
             })
+            ->defaultSort('id_peserta')
             ->columns($columns)
             ->filters([
                 Tables\Filters\SelectFilter::make('id_peserta')
@@ -160,6 +160,7 @@ class PenilaianDantonResource extends Resource
                     ->options(Peserta::pluck('nama', 'id')->toArray()),
             ])
             ->actions([
+                Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
@@ -177,9 +178,9 @@ class PenilaianDantonResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPenilaianDantons::route('/'),
+            'index'  => Pages\ListPenilaianDantons::route('/'),
             'create' => Pages\CreatePenilaianDanton::route('/create'),
-            'edit' => Pages\EditPenilaianDanton::route('/{record}/edit'),
+            'edit'   => Pages\EditPenilaianDanton::route('/{record}/edit'),
         ];
     }
 }
