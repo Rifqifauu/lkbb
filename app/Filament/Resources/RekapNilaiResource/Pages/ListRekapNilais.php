@@ -12,6 +12,9 @@ use App\Models\PenilaianVariasiFormasi;
 use App\Models\RekapNilai;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use App\Exports\RekapNilaiExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Filament\Actions\Action;
 
 class ListRekapNilais extends ListRecords
 {
@@ -22,6 +25,18 @@ class ListRekapNilais extends ListRecords
         parent::mount();
         $this->updateRekapData();
     }
+
+
+protected function getHeaderActions(): array
+{
+    return [
+        Actions\CreateAction::make(),
+        Action::make('export')
+            ->label('Export Excel')
+            ->color('success')
+            ->action(fn () => Excel::download(new RekapNilaiExport, 'rekap_nilai.xlsx')),
+    ];
+}
 
     private function updateRekapData(): void
     {
@@ -54,10 +69,5 @@ class ListRekapNilais extends ListRecords
         }
     }
 
-    protected function getHeaderActions(): array
-    {
-        return [
-            Actions\CreateAction::make(),
-        ];
-    }
+  
 }

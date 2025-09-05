@@ -14,7 +14,7 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Resources\Resource;
-use Filament\Tables;                // <- penting!
+use Filament\Tables;                // penting!
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
@@ -32,6 +32,7 @@ class PenilaianPBBResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
+            // >>> Versi PR dipertahankan
             Select::make('id_peserta')
                 ->label('Pilih Peserta')
                 ->options(Peserta::orderBy('nama')->pluck('nama', 'id'))
@@ -58,7 +59,7 @@ class PenilaianPBBResource extends Resource
                                 $a = AspekPBB::find($aspekId);
                                 if (!$a) return [];
 
-                                // pakai ANGKA sebagai key
+                                // gunakan ANGKA sebagai key
                                 return [
                                     (int)$a->kurang_1 => "Kurang 1 ({$a->kurang_1} poin)",
                                     (int)$a->kurang_2 => "Kurang 2 ({$a->kurang_2} poin)",
@@ -92,6 +93,7 @@ class PenilaianPBBResource extends Resource
 
     public static function table(Table $table): Table
     {
+        // >>> Versi PR dipertahankan
         $columns = [
             Tables\Columns\TextColumn::make('peserta.nama')
                 ->label('Peserta')
@@ -104,15 +106,15 @@ class PenilaianPBBResource extends Resource
                 ->searchable(),
         ];
 
-        // kolom dinamis per Aspek
+        // Kolom dinamis per Aspek
         foreach (AspekPBB::orderBy('id')->get() as $aspek) {
-            $columns[] = Tables\Columns\TextColumn::make('aspek_'.$aspek->id)
+            $columns[] = Tables\Columns\TextColumn::make('aspek_' . $aspek->id)
                 ->label($aspek->nama_penilaian)
                 ->alignCenter()
                 ->getStateUsing(function ($record) use ($aspek) {
                     $row = PenilaianPBB::where('id_peserta', $record->id_peserta)
-                        ->where('id_user',    $record->id_user)
-                        ->where('id_aspek',   $aspek->id)
+                        ->where('id_user',  $record->id_user)
+                        ->where('id_aspek', $aspek->id)
                         ->first();
 
                     return $row?->nilai ?? '-';
@@ -124,8 +126,8 @@ class PenilaianPBBResource extends Resource
             ->modifyQueryUsing(function (Builder $query) {
                 $user = Auth::user();
 
-                // filter data milik penilai selain admin
-                if (! $user->hasAnyRole(['super_admin', 'admin panitia'])) {
+                // filter data milik penilai (kecuali admin)
+                if (!$user->hasAnyRole(['super_admin', 'admin panitia'])) {
                     $query->where('id_user', $user->id);
                 }
 
@@ -151,10 +153,16 @@ class PenilaianPBBResource extends Resource
             ]);
     }
 
+    public static function getRelations(): array
+    {
+        return [];
+    }
+
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListPenilaianPBBS::route('/'),
+            // pakai nama class yang benar
+            'index'  => Pages\ListPenilaianPBBs::route('/'),
             'create' => Pages\CreatePenilaianPBB::route('/create'),
             'edit'   => Pages\EditPenilaianPBB::route('/{record}/edit'),
         ];

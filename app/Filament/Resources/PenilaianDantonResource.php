@@ -32,6 +32,7 @@ class PenilaianDantonResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
+            // >>> Versi PR (dipertahankan)
             Select::make('id_peserta')
                 ->label('Pilih Peserta')
                 ->options(Peserta::orderBy('nama')->pluck('nama', 'id')->toArray())
@@ -90,6 +91,7 @@ class PenilaianDantonResource extends Resource
 
     public static function table(Table $table): Table
     {
+        // >>> Versi PR (dipertahankan)
         $columns = [
             Tables\Columns\TextColumn::make('peserta.nama')
                 ->label('Peserta')

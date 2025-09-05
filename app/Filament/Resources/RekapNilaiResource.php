@@ -6,8 +6,8 @@ use App\Filament\Resources\RekapNilaiResource\Pages;
 use App\Models\PenguranganNilai;
 use App\Models\RekapNilai;
 use App\Models\Peserta;
-use App\Models\PenilaianPBB;
-use App\Models\PenilaianDanton;
+use App\Models\PenilaianPBB;      // pakai versi PR
+use App\Models\PenilaianDanton;   // pakai versi PR
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -29,7 +29,7 @@ class RekapNilaiResource extends Resource
     {
         return $form->schema([
             Select::make('id_peserta')
-                ->options(fn() => Peserta::pluck('nama', 'id'))
+                ->options(fn () => Peserta::pluck('nama', 'id'))
                 ->required()
                 ->label('Peserta'),
 
@@ -57,7 +57,7 @@ class RekapNilaiResource extends Resource
                 TextColumn::make('nilai_pbb')
                     ->label('Nilai PBB')
                     ->getStateUsing(
-                        fn($record) =>
+                        fn ($record) =>
                         (int) PenilaianPBB::where('id_peserta', $record->id_peserta)->sum('nilai')
                     )
                     ->sortable(),
@@ -66,30 +66,29 @@ class RekapNilaiResource extends Resource
                 TextColumn::make('nilai_danton')
                     ->label('Nilai Danton')
                     ->getStateUsing(
-                        fn($record) =>
+                        fn ($record) =>
                         (int) PenilaianDanton::where('id_peserta', $record->id_peserta)->sum('nilai')
                     )
                     ->sortable(),
 
-                // Masih pakai field rekap sementara untuk kategori lain.
-                // Kalau nanti ada tabel penilaiannya, tinggal tiru pola di atas.
+                // Sementara ambil dari field rekap (kalau ada tabel khusus tinggal samakan pola di atas)
                 TextColumn::make('nilai_kostum')
                     ->label('Nilai Kostum')
-                    ->formatStateUsing(fn($state) => (string) ((int) ($state ?? 0)))
+                    ->formatStateUsing(fn ($state) => (string) ((int) ($state ?? 0)))
                     ->sortable(),
 
                 TextColumn::make('nilai_tata_rias')
                     ->label('Nilai Tata Rias')
-                    ->formatStateUsing(fn($state) => (string) ((int) ($state ?? 0)))
+                    ->formatStateUsing(fn ($state) => (string) ((int) ($state ?? 0)))
                     ->sortable(),
 
                 TextColumn::make('nilai_variasi_formasi')
                     ->label('Nilai Variasi Formasi')
-                    ->formatStateUsing(fn($state) => (string) ((int) ($state ?? 0)))
+                    ->formatStateUsing(fn ($state) => (string) ((int) ($state ?? 0)))
                     ->sortable(),
 
                 TextColumn::make('nilai_pengurangan')
-                    ->label('Nilai Pengurangan')
+                    ->label('Pengurangan')
                     ->getStateUsing(function ($record) {
                         return PenguranganNilai::where('id_peserta', $record->id_peserta)
                             ->join('aspek_pengurangan_nilai', 'pengurangan_nilai.id_aspek', '=', 'aspek_pengurangan_nilai.id')
@@ -101,8 +100,8 @@ class RekapNilaiResource extends Resource
                 TextColumn::make('total_utama')
                     ->label('Total Utama')
                     ->getStateUsing(function ($record) {
-                        $pbb    = (int) PenilaianPBB::where('id_peserta', $record->id_peserta)->sum('nilai');
-                        $danton = (int) PenilaianDanton::where('id_peserta', $record->id_peserta)->sum('nilai');
+                        $pbb      = (int) PenilaianPBB::where('id_peserta', $record->id_peserta)->sum('nilai');
+                        $danton   = (int) PenilaianDanton::where('id_peserta', $record->id_peserta)->sum('nilai');
                         $kostum   = (int) ($record->nilai_kostum ?? 0);
                         $tataRias = (int) ($record->nilai_tata_rias ?? 0);
                         $variasi  = (int) ($record->nilai_variasi_formasi ?? 0);
@@ -128,9 +127,7 @@ class RekapNilaiResource extends Resource
                     })
                     ->sortable(),
             ])
-            ->filters([
-                //
-            ])
+            ->filters([])
             ->actions([
                 EditAction::make(),
             ])
