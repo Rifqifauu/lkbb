@@ -23,6 +23,16 @@ class PenguranganNilaiResource extends Resource
     protected static ?string $model = PenguranganNilai::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationLabel = 'Pengurangan Nilai';
+    public static function getModelLabel(): string
+    {
+        return 'Pengurangan Nilai:'; // judul singular
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Pengurangan Nilai:'; // judul plural (List)
+    }
 
     public static function form(Form $form): Form
     {

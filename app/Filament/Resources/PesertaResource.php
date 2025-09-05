@@ -20,6 +20,16 @@ class PesertaResource extends Resource
     protected static ?string $model = Peserta::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
+    protected static ?string $navigationLabel = 'Daftar Peserta';
+    public static function getModelLabel(): string
+    {
+        return 'Daftar Peserta:'; // judul singular
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Daftar Peserta:'; // judul plural (List)
+    }
 
     public static function form(Form $form): Form
     {

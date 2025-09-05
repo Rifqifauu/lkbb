@@ -3,9 +3,11 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\RekapNilaiResource\Pages;
+use App\Models\PenguranganNilai;
 use App\Models\RekapNilai;
 use App\Models\Peserta;
-use App\Models\User;
+use App\Models\PenilaianPBB;      // pakai versi PR
+use App\Models\PenilaianDanton;   // pakai versi PR
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -20,93 +22,111 @@ class RekapNilaiResource extends Resource
 {
     protected static ?string $model = RekapNilai::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-table-cells';
+    protected static ?string $navigationIcon  = 'heroicon-o-table-cells';
     protected static ?string $navigationLabel = 'Rekap Nilai';
 
     public static function form(Forms\Form $form): Forms\Form
     {
-        return $form
-            ->schema([
-                Select::make('id_peserta')
-                    ->options(fn () => Peserta::pluck('nama', 'id'))
-                    ->required()
-                    ->label('Peserta'),
+        return $form->schema([
+            Select::make('id_peserta')
+                ->options(fn () => Peserta::pluck('nama', 'id'))
+                ->required()
+                ->label('Peserta'),
 
-                TextInput::make('waktu')
-                    ->required()
-                    ->suffix(' Menit')
-                    ->label('Waktu'),
-            ]);
+            TextInput::make('waktu')
+                ->required()
+                ->suffix(' Menit')
+                ->label('Waktu'),
+        ]);
     }
 
     public static function table(Table $table): Table
     {
-        // Kolom default
-        $columns = [
-            TextColumn::make('peserta.nama')
-                ->label('Peserta')
-                ->sortable(),
-
-            TextColumn::make('waktu')
-                ->label('Waktu')
-                ->sortable()
-                ->suffix(' Menit'),
-        ];
-
-        // Ambil semua juri dari tabel users
-        $juris = User::all();
-
-        foreach ($juris as $juri) {
-            // Nilai PBB per juri
-            $columns[] = TextColumn::make('pbb_' . $juri->id)
-                ->label('Nilai PBB (' . $juri->name . ')')
-                ->getStateUsing(fn ($record) =>
-                    optional($record->penilaianPbb->firstWhere('id_user', $juri->id))->nilai
-                );
-
-            // Nilai Danton per juri
-            $columns[] = TextColumn::make('danton_' . $juri->id)
-                ->label('Nilai Danton (' . $juri->name . ')')
-                ->getStateUsing(fn ($record) =>
-                    optional($record->penilaianDanton->firstWhere('id_user', $juri->id))->nilai
-                );
-
-            // Nilai Kostum per juri
-            $columns[] = TextColumn::make('kostum_' . $juri->id)
-                ->label('Nilai Kostum (' . $juri->name . ')')
-                ->getStateUsing(fn ($record) =>
-                    optional($record->penilaianSeragam->firstWhere('id_user', $juri->id))->nilai
-                );
-
-            // Nilai Tata Rias per juri
-            $columns[] = TextColumn::make('tata_rias_' . $juri->id)
-                ->label('Nilai Tata Rias (' . $juri->name . ')')
-                ->getStateUsing(fn ($record) =>
-                    optional($record->penilaianTataRias->firstWhere('id_user', $juri->id))->nilai
-                );
-
-            // Nilai Variasi Formasi per juri
-            $columns[] = TextColumn::make('variasi_formasi_' . $juri->id)
-                ->label('Nilai Variasi Formasi (' . $juri->name . ')')
-                ->getStateUsing(fn ($record) =>
-                    optional($record->penilaianVariasiFormasi->firstWhere('id_user', $juri->id))->nilai
-                );
-        }
-
-        // Kolom rata-rata + total
-        $columns = array_merge($columns, [
-            TextColumn::make('nilai_pbb')->label('Rata-rata PBB')->sortable(),
-            TextColumn::make('nilai_danton')->label('Rata-rata Danton')->sortable(),
-            TextColumn::make('nilai_kostum')->label('Rata-rata Kostum')->sortable(),
-            TextColumn::make('nilai_tata_rias')->label('Rata-rata Tata Rias')->sortable(),
-            TextColumn::make('nilai_variasi_formasi')->label('Rata-rata Variasi Formasi')->sortable(),
-            TextColumn::make('nilai_pengurangan')->label('Pengurangan')->sortable(),
-            TextColumn::make('total_utama')->label('Total Utama')->sortable(),
-            TextColumn::make('total_umum')->label('Total Umum')->sortable(),
-        ]);
-
         return $table
-            ->columns($columns)
+            ->columns([
+                TextColumn::make('peserta.nama')
+                    ->label('Peserta')
+                    ->sortable(),
+
+                TextColumn::make('waktu')
+                    ->label('Waktu')
+                    ->sortable()
+                    ->suffix(' Menit'),
+
+                // ===== NILAI PBB: sum semua juri & aspek untuk peserta ini =====
+                TextColumn::make('nilai_pbb')
+                    ->label('Nilai PBB')
+                    ->getStateUsing(
+                        fn ($record) =>
+                        (int) PenilaianPBB::where('id_peserta', $record->id_peserta)->sum('nilai')
+                    )
+                    ->sortable(),
+
+                // ===== NILAI DANTON: sum semua juri & aspek =====
+                TextColumn::make('nilai_danton')
+                    ->label('Nilai Danton')
+                    ->getStateUsing(
+                        fn ($record) =>
+                        (int) PenilaianDanton::where('id_peserta', $record->id_peserta)->sum('nilai')
+                    )
+                    ->sortable(),
+
+                // Sementara ambil dari field rekap (kalau ada tabel khusus tinggal samakan pola di atas)
+                TextColumn::make('nilai_kostum')
+                    ->label('Nilai Kostum')
+                    ->formatStateUsing(fn ($state) => (string) ((int) ($state ?? 0)))
+                    ->sortable(),
+
+                TextColumn::make('nilai_tata_rias')
+                    ->label('Nilai Tata Rias')
+                    ->formatStateUsing(fn ($state) => (string) ((int) ($state ?? 0)))
+                    ->sortable(),
+
+                TextColumn::make('nilai_variasi_formasi')
+                    ->label('Nilai Variasi Formasi')
+                    ->formatStateUsing(fn ($state) => (string) ((int) ($state ?? 0)))
+                    ->sortable(),
+
+                TextColumn::make('nilai_pengurangan')
+                    ->label('Pengurangan')
+                    ->getStateUsing(function ($record) {
+                        return PenguranganNilai::where('id_peserta', $record->id_peserta)
+                            ->join('aspek_pengurangan_nilai', 'pengurangan_nilai.id_aspek', '=', 'aspek_pengurangan_nilai.id')
+                            ->sum('aspek_pengurangan_nilai.pengurangan');
+                    })
+                    ->sortable(),
+
+                // ===== TOTAL UTAMA: PBB + Danton + (kategori lain jika ada) =====
+                TextColumn::make('total_utama')
+                    ->label('Total Utama')
+                    ->getStateUsing(function ($record) {
+                        $pbb      = (int) PenilaianPBB::where('id_peserta', $record->id_peserta)->sum('nilai');
+                        $danton   = (int) PenilaianDanton::where('id_peserta', $record->id_peserta)->sum('nilai');
+                        $kostum   = (int) ($record->nilai_kostum ?? 0);
+                        $tataRias = (int) ($record->nilai_tata_rias ?? 0);
+                        $variasi  = (int) ($record->nilai_variasi_formasi ?? 0);
+
+                        return $pbb + $danton + $kostum + $tataRias + $variasi;
+                    })
+                    ->sortable(),
+
+                // ===== TOTAL UMUM: Total Utama - Pengurangan =====
+                TextColumn::make('total_umum')
+                    ->label('Total Umum')
+                    ->getStateUsing(function ($record) {
+                        $pbb       = (int) PenilaianPBB::where('id_peserta', $record->id_peserta)->sum('nilai');
+                        $danton    = (int) PenilaianDanton::where('id_peserta', $record->id_peserta)->sum('nilai');
+                        $kostum    = (int) ($record->nilai_kostum ?? 0);
+                        $tataRias  = (int) ($record->nilai_tata_rias ?? 0);
+                        $variasi   = (int) ($record->nilai_variasi_formasi ?? 0);
+                        $pengurang = (int) PenguranganNilai::where('id_peserta', $record->id_peserta)
+                            ->join('aspek_pengurangan_nilai', 'pengurangan_nilai.id_aspek', '=', 'aspek_pengurangan_nilai.id')
+                            ->sum('aspek_pengurangan_nilai.pengurangan');
+
+                        return $pbb + $danton + $kostum + $tataRias + $variasi - $pengurang;
+                    })
+                    ->sortable(),
+            ])
             ->filters([])
             ->actions([
                 EditAction::make(),
@@ -124,9 +144,9 @@ class RekapNilaiResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListRekapNilais::route('/'),
+            'index'  => Pages\ListRekapNilais::route('/'),
             'create' => Pages\CreateRekapNilai::route('/create'),
-            'edit' => Pages\EditRekapNilai::route('/{record}/edit'),
+            'edit'   => Pages\EditRekapNilai::route('/{record}/edit'),
         ];
     }
 }
