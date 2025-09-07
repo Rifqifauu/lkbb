@@ -23,6 +23,16 @@ class AspekTataRiasResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
     protected static ?string $navigationGroup = 'Aspek Penilaian';
+    protected static ?string $navigationLabel = 'Formulasi Tata Rias';
+    public static function getModelLabel(): string
+    {
+        return 'Formulasi Tata Rias:'; // judul singular
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Formulasi Tata Rias:'; // judul plural (List)
+    }
 
     public static function form(Form $form): Form
 {
