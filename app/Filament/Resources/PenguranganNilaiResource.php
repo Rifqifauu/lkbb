@@ -44,7 +44,7 @@ class PenguranganNilaiResource extends Resource
                     ->nullable(),
 
                 TextInput::make('durasi_penalti')
-                    ->label('Durasi Penalti (menit)')
+                    ->label('Durasi Penalti (detik/menit)')
                     ->numeric()
                     ->nullable(),
             ]);
