@@ -1,17 +1,30 @@
 <?php
 
 namespace App\Filament\Pages;
-  use Filament\Actions\Action;
+
+use Filament\Pages\Page;
+use Filament\Actions\Action;
 use App\Exports\PemeringkatanExport;
 use Maatwebsite\Excel\Facades\Excel;
-use Filament\Pages\Page;
 use App\Models\RekapNilai;
 
 class Pemeringkatan extends Page
 {
-        protected static ?string $navigationIcon = 'heroicon-o-trophy';
+    protected static ?string $navigationIcon = 'heroicon-o-trophy';
 
     protected static string $view = 'filament.pages.pemeringkatan';
+
+    public ?string $tingkat = 'all';
+
+    // Property yang akan di-watch untuk perubahan
+    protected $queryString = ['tingkat'];
+
+    // Method untuk handle perubahan filter
+    public function updatedTingkat()
+    {
+        // Reset ke halaman pertama jika ada pagination
+        // $this->resetPage(); // uncomment jika pakai pagination
+    }
 
     // Daftar aspek penilaian
     public function getAspek(): array
@@ -25,41 +38,63 @@ class Pemeringkatan extends Page
         ];
     }
 
-    // Ranking Utama (semua peserta)
+    // Ranking Utama (dengan filter tingkat)
     public function getUtama()
     {
-        return RekapNilai::with('peserta')->orderByDesc('total_utama')->get();
+        $query = RekapNilai::with('peserta');
+        
+        if ($this->tingkat !== 'all') {
+            $query->whereHas('peserta', function ($q) {
+                $q->where('tingkat', $this->tingkat);
+            });
+        }
+        
+        return $query->orderByDesc('total_utama')->get();
     }
 
-    // Ranking Umum (semua peserta)
+    // Ranking Umum (dengan filter tingkat)
     public function getUmum()
     {
-        return RekapNilai::with('peserta')->orderByDesc('total_umum')->get();
+        $query = RekapNilai::with('peserta');
+        
+        if ($this->tingkat !== 'all') {
+            $query->whereHas('peserta', function ($q) {
+                $q->where('tingkat', $this->tingkat);
+            });
+        }
+        
+        return $query->orderByDesc('total_umum')->get();
     }
 
-    // Juara tiap aspek (3 tertinggi)
+    // Juara tiap aspek (3 tertinggi, dengan filter tingkat)
     public function getJuaraPerAspek()
     {
         $result = [];
         foreach ($this->getAspek() as $key => $label) {
-            $top3 = RekapNilai::with('peserta')
-                        ->orderByDesc($key)
-                        ->take(3)
-                        ->get();
+            $query = RekapNilai::with('peserta');
+            
+            if ($this->tingkat !== 'all') {
+                $query->whereHas('peserta', function ($q) {
+                    $q->where('tingkat', $this->tingkat);
+                });
+            }
+            
+            $top3 = $query->orderByDesc($key)->take(3)->get();
             $result[$label] = $top3;
         }
         return $result;
     }
-  
 
-protected function getHeaderActions(): array
-{
-    return [
-        Action::make('export')
-            ->label('Export Excel')
-            ->color('success')
-            ->action(fn () => Excel::download(new PemeringkatanExport, 'pemeringkatan.xlsx')),
-    ];
-}
-
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('export')
+                ->label('Export Excel')
+                ->color('success')
+                ->action(fn () => Excel::download(
+                    new PemeringkatanExport($this->tingkat),
+                    'pemeringkatan.xlsx'
+                )),
+        ];
+    }
 }

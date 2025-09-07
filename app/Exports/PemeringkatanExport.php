@@ -6,11 +6,18 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
 class PemeringkatanExport implements WithMultipleSheets
 {
+    protected $tingkat;
+
+    public function __construct($tingkat = 'all')
+    {
+        $this->tingkat = $tingkat;
+    }
+
     public function sheets(): array
     {
         $sheets = [
-            new RankingUtamaSheet(),
-            new RankingUmumSheet(),
+            new RankingUtamaSheet($this->tingkat),
+            new RankingUmumSheet($this->tingkat),
         ];
 
         $aspek = [
@@ -22,7 +29,7 @@ class PemeringkatanExport implements WithMultipleSheets
         ];
 
         foreach ($aspek as $field => $label) {
-            $sheets[] = new JuaraPerAspekSheet($field, $label);
+            $sheets[] = new JuaraPerAspekSheet($field, $label, $this->tingkat);
         }
 
         return $sheets;

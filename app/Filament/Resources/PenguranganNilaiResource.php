@@ -3,26 +3,24 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PenguranganNilaiResource\Pages;
-use App\Filament\Resources\PenguranganNilaiResource\RelationManagers;
 use App\Models\PenguranganNilai;
 use App\Models\AspekPenguranganNilai;
 use App\Models\Peserta;
 use Filament\Forms;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Resources\Resource;
+use Filament\Forms\Form;
 
 class PenguranganNilaiResource extends Resource
 {
     protected static ?string $model = PenguranganNilai::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document';
+    protected static ?string $navigationGroup = 'Penilaian';
+    protected static ?string $navigationLabel = 'Pengurangan Nilai';
 
     public static function form(Form $form): Form
     {
@@ -31,16 +29,24 @@ class PenguranganNilaiResource extends Resource
                 Select::make('id_peserta')
                     ->label('Nama Peserta')
                     ->required()
-                    ->options(function () {
-                        return Peserta::pluck('nama', 'id')->toArray();
-                    }),
+                    ->options(fn () => Peserta::pluck('nama', 'id')->toArray())
+                    ->searchable(),
+
                 Select::make('id_aspek')
                     ->label('Aspek Pengurangan Nilai')
                     ->required()
-                    ->options(function () {
-                        return AspekPenguranganNilai::pluck('nama_penilaian', 'id')->toArray();
-                    }),
+                    ->options(fn () => AspekPenguranganNilai::pluck('nama_penilaian', 'id')->toArray())
+                    ->searchable(),
 
+                TextInput::make('jml_anggota_penalti')
+                    ->label('Jumlah Anggota Penalti')
+                    ->numeric()
+                    ->nullable(),
+
+                TextInput::make('durasi_penalti')
+                    ->label('Durasi Penalti (menit)')
+                    ->numeric()
+                    ->nullable(),
             ]);
     }
 
@@ -48,22 +54,41 @@ class PenguranganNilaiResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('peserta.nama')
+                TextColumn::make('peserta.nama')
                     ->label('Peserta')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('aspek.nama_penilaian')
+                TextColumn::make('aspek.nama_penilaian')
                     ->label('Aspek Pengurangan')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('aspek.pengurangan')
+                // Menampilkan nilai pengurangan (langsung atau perhitungan)
+                TextColumn::make('nilai_pengurangan')
                     ->label('Nilai Pengurangan')
                     ->alignCenter()
-                    ->sortable(),
+                    ->getStateUsing(function ($record) {
+                        $aspek = $record->aspek;
 
-                Tables\Columns\TextColumn::make('created_at')
+                        // Kalau aspek punya pengurangan langsung
+                        if (!is_null($aspek->pengurangan)) {
+                            return $aspek->pengurangan;
+                        }
+
+                        // Hitung berdasarkan per durasi / per anggota
+                        $total = 0;
+                        if (!is_null($aspek->per_durasi) && $record->durasi_penalti) {
+                            $total += $aspek->per_durasi * $record->durasi_penalti;
+                        }
+                        if (!is_null($aspek->per_anggota) && $record->jml_anggota_penalti) {
+                            $total += $aspek->per_anggota * $record->jml_anggota_penalti;
+                        }
+
+                        return $total ?: '-';
+                    }),
+
+                TextColumn::make('created_at')
                     ->label('Tanggal')
                     ->dateTime()
                     ->sortable(),
@@ -78,7 +103,7 @@ class PenguranganNilaiResource extends Resource
                     ->options(AspekPenguranganNilai::pluck('nama_penilaian', 'id')->toArray()),
             ])
             ->actions([
-
+                Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
@@ -91,9 +116,7 @@ class PenguranganNilaiResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

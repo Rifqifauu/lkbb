@@ -9,15 +9,30 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 
 class RankingUtamaSheet implements FromArray, WithTitle, WithHeadings
 {
+    protected $tingkat;
+
+    public function __construct($tingkat = 'all')
+    {
+        $this->tingkat = $tingkat;
+    }
+
     public function array(): array
     {
-        return RekapNilai::with('peserta')
-            ->orderByDesc('total_utama')
+        $query = RekapNilai::with('peserta');
+        
+        if ($this->tingkat !== 'all') {
+            $query->whereHas('peserta', function ($q) {
+                $q->where('tingkat', $this->tingkat);
+            });
+        }
+        
+        return $query->orderByDesc('total_utama')
             ->get()
             ->map(function ($rekap, $index) {
                 return [
                     'rank' => $index + 1,
                     'peserta' => $rekap->peserta->nama ?? '-',
+                    'tingkat' => $rekap->peserta->tingkat ?? '-',
                     'total_utama' => $rekap->total_utama,
                     'total_umum' => $rekap->total_umum,
                     'nilai_pbb' => $rekap->nilai_pbb,
@@ -31,7 +46,8 @@ class RankingUtamaSheet implements FromArray, WithTitle, WithHeadings
 
     public function title(): string
     {
-        return 'Ranking Utama';
+        $tingkatText = $this->tingkat !== 'all' ? " - {$this->tingkat}" : '';
+        return 'Ranking Utama' . $tingkatText;
     }
 
     public function headings(): array
@@ -39,6 +55,7 @@ class RankingUtamaSheet implements FromArray, WithTitle, WithHeadings
         return [
             'Rank',
             'Peserta',
+            'Tingkat',
             'Total Utama',
             'Total Umum',
             'PBB',

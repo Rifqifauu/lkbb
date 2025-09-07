@@ -3,6 +3,21 @@
         x-data="{ mainTab: 'utama', aspekTab: '{{ array_key_first($this->getAspek()) }}' }" 
         class="space-y-6"
     >
+      <!-- Filter Tingkat -->
+<div class="flex justify-end mb-6">
+    <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">Filter Tingkat:</label>
+        <select 
+            wire:model.live="tingkat" 
+            class="bg-white dark:bg-gray-800 border-0 rounded-md px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 shadow-sm"
+        >
+            <option value="all">Semua Tingkat</option>
+            <option value="SLTA">SLTA</option>
+            <option value="SLTP">SLTP</option>
+        </select>
+    </div>
+</div>
+
         <!-- Main Tabs -->
         <div class="flex border-b border-gray-300 dark:border-gray-700 space-x-2">
             <button 

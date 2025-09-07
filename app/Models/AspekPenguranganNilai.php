@@ -11,5 +11,7 @@ class AspekPenguranganNilai extends Model
     protected $fillable = [
         'nama_penilaian',
         'pengurangan',
+        'per_durasi',
+        'per_anggota'
     ];
 }
