@@ -54,6 +54,7 @@ class NamaJuaraResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -74,6 +75,7 @@ class NamaJuaraResource extends Resource
         return [
             'index' => Pages\ListNamaJuaras::route('/'),
             'edit' => Pages\EditNamaJuara::route('/{record}/edit'),
+            
         ];
     }
 }

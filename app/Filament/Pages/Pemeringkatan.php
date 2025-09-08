@@ -7,6 +7,7 @@ use Filament\Actions\Action;
 use App\Exports\PemeringkatanExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\RekapNilai;
+use App\Models\NamaJuara;
 
 class Pemeringkatan extends Page
 {
@@ -39,18 +40,31 @@ class Pemeringkatan extends Page
     }
 
     // Ranking Utama (dengan filter tingkat)
-    public function getUtama()
-    {
-        $query = RekapNilai::with('peserta');
-        
-        if ($this->tingkat !== 'all') {
-            $query->whereHas('peserta', function ($q) {
-                $q->where('tingkat', $this->tingkat);
+public function getUtama()
+{
+    // Ambil ranking utama
+    $rekap = RekapNilai::with('peserta')
+        ->when($this->tingkat !== 'all', function ($q) {
+            $q->whereHas('peserta', function ($q2) {
+                $q2->where('tingkat', $this->tingkat);
             });
-        }
-        
-        return $query->orderByDesc('total_utama')->get();
+        })
+        ->orderByDesc('total_utama')
+        ->get();
+
+    // Ambil daftar juara sesuai peringkat
+    $juaraList = NamaJuara::orderBy('peringkat', 'asc')
+        ->pluck('nama_juara'); // ['Juara Utama 1', 'Juara Utama 2', ...]
+
+    // Pasangkan juara ke hasil ranking
+    foreach ($rekap as $index => $item) {
+        $item->nama_juara = $juaraList[$index] ?? null;
     }
+
+    return $rekap;
+}
+
+
 
     // Ranking Umum (dengan filter tingkat)
     public function getUmum()
@@ -84,6 +98,7 @@ class Pemeringkatan extends Page
         }
         return $result;
     }
+
 
     protected function getHeaderActions(): array
     {

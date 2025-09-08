@@ -50,29 +50,32 @@
         </div>
 
         <!-- Ranking Utama -->
-        <div x-show="mainTab==='utama'" class="mt-4">
-            <h2 class="font-bold text-lg mb-2 text-gray-800 dark:text-gray-200">Ranking Utama</h2>
-            <table class="w-full table-auto border-collapse border border-gray-200 dark:border-gray-700">
-                <thead>
-                    <tr class="bg-gray-100 dark:bg-gray-800">
-                        <th class="border px-4 py-2 dark:border-gray-700">No</th>
-                        <th class="border px-4 py-2 dark:border-gray-700">Nama Peserta</th>
-                        <th class="border px-4 py-2 dark:border-gray-700">Tingkat</th>
-                        <th class="border px-4 py-2 dark:border-gray-700">Total Nilai Utama</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($this->getUtama() as $item)
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-900">
-                            <td class="border px-4 py-2 dark:border-gray-700">{{ $loop->iteration }}</td>
-                            <td class="border px-4 py-2 dark:border-gray-700">{{ $item->peserta->nama }}</td>
-                            <td class="border px-4 py-2 dark:border-gray-700">{{ $item->peserta->tingkat }}</td>
-                            <td class="border px-4 py-2 dark:border-gray-700">{{ $item->total_utama }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+     <div x-show="mainTab==='utama'" class="mt-4">
+    <h2 class="font-bold text-lg mb-2 text-gray-800 dark:text-gray-200">Ranking Utama</h2>
+    <table class="w-full table-auto border-collapse border border-gray-200 dark:border-gray-700">
+        <thead>
+            <tr class="bg-gray-100 dark:bg-gray-800">
+                <th class="border px-4 py-2 dark:border-gray-700">No</th>
+                <th class="border px-4 py-2 dark:border-gray-700">Juara</th>
+                <th class="border px-4 py-2 dark:border-gray-700">Nama Peserta</th>
+                <th class="border px-4 py-2 dark:border-gray-700">Tingkat</th>
+                <th class="border px-4 py-2 dark:border-gray-700">Total Nilai Utama</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($this->getUtama() as $item)
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-900">
+                    <td class="border px-4 py-2 dark:border-gray-700">{{ $loop->iteration }}</td>
+                    <td class="border px-4 py-2 dark:border-gray-700">{{ $item->nama_juara }}</td>
+                    <td class="border px-4 py-2 dark:border-gray-700">{{ $item->peserta->nama }}</td>
+                    <td class="border px-4 py-2 dark:border-gray-700">{{ $item->peserta->tingkat }}</td>
+                    <td class="border px-4 py-2 dark:border-gray-700">{{ $item->total_utama }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+
 
         <!-- Ranking Umum -->
         <div x-show="mainTab==='umum'" class="mt-4">
