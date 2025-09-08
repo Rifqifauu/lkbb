@@ -63,6 +63,7 @@ class PesertaResource extends Resource
 
                 Select::make('tingkat')
                     ->options([
+                        'sd' => 'SD',
                         'sltp' => 'SLTP',
                         'slta' => 'SLTA',
                     ])

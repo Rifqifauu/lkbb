@@ -14,6 +14,7 @@
             <option value="all">Semua Tingkat</option>
             <option value="SLTA">SLTA</option>
             <option value="SLTP">SLTP</option>
+            <option value="SD">SD</option>
         </select>
     </div>
 </div>
