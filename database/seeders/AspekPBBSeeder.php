@@ -194,6 +194,13 @@ class AspekPBBSeeder extends Seeder
                 'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
             ],
             [
+                'nama_penilaian' => 'Bubar',
+                'kurang_1' => 38, 'kurang_2' => 40, 'kurang_3' => 42,
+                'cukup_1' => 44, 'cukup_2' => 46, 'cukup_3' => 48,
+                'baik_1' => 50, 'baik_2' => 52, 'baik_3' => 54,
+                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
+            ],
+            [
                 'nama_penilaian' => 'Berkumpul',
                 'kurang_1' => 46, 'kurang_2' => 48, 'kurang_3' => 50,
                 'cukup_1' => 52, 'cukup_2' => 54, 'cukup_3' => 56,

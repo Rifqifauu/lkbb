@@ -16,8 +16,11 @@ use Illuminate\Database\Eloquent\Collection;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Radio;
 use Illuminate\Support\Facades\Auth;
+use Filament\Forms\Get;
+use Illuminate\Database\Eloquent\Model;
 
 class PenilaianDantonResource extends Resource
 {
@@ -25,21 +28,64 @@ class PenilaianDantonResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document';
     protected static ?string $navigationGroup = 'Penilaian';
+    protected static ?int $navigationSort = 3;
     protected static ?string $navigationLabel = 'Penilaian Danton';
     protected static ?string $modelLabel = 'Penilaian Danton';
     protected static ?string $pluralModelLabel = 'Penilaian Danton';
+    
 
     public static function form(Form $form): Form
     {
         return $form->schema([
-            // >>> Versi PR (dipertahankan)
+            Select::make('tingkat_picker')
+                ->label('Pilih Tingkat')
+                ->options([
+                    'sd'   => 'SD',
+                    'sltp' => 'SLTP',
+                    'slta' => 'SLTA',
+                ])
+                ->live()
+                ->required(fn(string $operation) => $operation === 'create')
+                ->dehydrated(false)
+                ->hiddenOn('edit'),
+
+            // CREATE ONLY - Pilih Peserta
             Select::make('id_peserta')
-                ->label('Pilih Peserta')
-                ->options(Peserta::orderBy('nama')->pluck('nama', 'id')->toArray())
+                ->label('Pilih Peserta (No. Urut — Nama)')
+                ->options(function (Get $get) {
+                    $tingkat = $get('tingkat_picker');
+
+                    return Peserta::query()
+                        ->when($tingkat, fn($q) => $q->where('tingkat', $tingkat))
+                        ->whereDoesntHave('penilaianDanton', fn($q) => $q->where('id_user', auth()->id()))
+                        ->orderBy('no_tampil')
+                        ->get()
+                        ->mapWithKeys(function ($p) {
+                            $label = strtoupper($p->tingkat) . ' · ' . str_pad($p->no_tampil, 2, '0', STR_PAD_LEFT) . ' — ' . $p->nama;
+                            return [$p->id => $label];
+                        })
+                        ->toArray();
+                })
                 ->searchable()
-                ->required()
-                ->disabledOn('edit')
+                ->preload()
+                ->required(fn(string $operation) => $operation === 'create')
+                ->dehydrated(fn(string $operation) => $operation === 'create')
+                ->hiddenOn('edit')
                 ->columnSpanFull(),
+
+            // EDIT ONLY - Info Peserta
+            Placeholder::make('info_peserta')
+                ->label('Peserta')
+                ->content(function (?Model $record) {
+                    if (!$record) return '-';
+                    $record->loadMissing('peserta');
+                    $p = $record->peserta;
+                    if (!$p) return '-';
+                    return strtoupper($p->tingkat) . ' · ' . str_pad($p->no_tampil, 2, '0', STR_PAD_LEFT) . ' — ' . $p->nama;
+                })
+                ->visibleOn('edit')
+                ->columnSpanFull(),
+
 
             Repeater::make('penilaian_items')
                 ->label('Penilaian Per Aspek')

@@ -10,7 +10,7 @@ class AspekVariasiFormasi extends BaseWidget
 {
     protected function getStats(): array
     {
-        $totalNilai = AspekModel::sum('baik_3');
+        $totalNilai = AspekModel::sum('baik_2');
      
         $totalAspek = AspekModel::count();
         return [
