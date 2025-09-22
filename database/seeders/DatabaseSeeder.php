@@ -15,14 +15,21 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // User::factory(10)->create();
-        $this->call(AspekPBBSeeder::class);
+        // $this->call(AspekPBBSeeder::class);
+        $this->call([
+            AspekPBBSeeder::class,
+            AspekDantonSeeder::class,
+            AspekSeragamSeeder::class,
+            AspekVariasiFormasiSeeder::class,
+            AspekTataRiasSeeder::class,
+        ]);
 
         User::factory()->create(
             [
-            'name' => 'Admin',
-            'email' => 'admin@example.com',
-            'password' => 'password',
-        ]
-    );
+                'name' => 'Admin',
+                'email' => 'admin@example.com',
+                'password' => 'password',
+            ]
+        );
     }
 }

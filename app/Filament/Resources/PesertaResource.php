@@ -89,7 +89,7 @@ class PesertaResource extends Resource
                     ->color(fn ($state) => match ($state) {
                         'sltp' => 'danger',
                         'slta' => 'success',
-                        default => 'gray',
+                        default => 'warning',
                     })
                     ->formatStateUsing(fn ($state) => strtoupper($state)),
             ])

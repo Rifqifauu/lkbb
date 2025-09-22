@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('aspek_variasi_formasis');
+        Schema::dropIfExists('aspek_variasi_formasi');
     }
 };

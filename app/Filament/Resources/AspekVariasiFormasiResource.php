@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\AspekVariasiFormasiResource\Pages;
 use App\Filament\Resources\AspekVariasiFormasiResource\RelationManagers;
 use App\Models\AspekVariasiFormasi;
+use App\Models\PenilaianVariasiFormasi;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -35,73 +36,64 @@ class AspekVariasiFormasiResource extends Resource
     }
 
     public static function form(Form $form): Form
-{
-    return $form
-        ->schema([
-            Grid::make(12)->schema([
-                // Baris 1
-                TextInput::make('nama_penilaian')
-                    ->label('Nama Aspek')
-                    ->required()
-                    ->columnSpan(12),
+    {
+        return $form
+            ->schema([
+                Grid::make(12)->schema([
+                    // Baris 1
+                    TextInput::make('nama_penilaian')
+                        ->label('Nama Aspek')
+                        ->required()
+                        ->columnSpan(12),
 
-                // Baris 2
-                Grid::make(3)->schema([
-                    TextInput::make('kurang_1')
-                        ->label('Kurang 1')
-                        ->required()
-                        ->numeric(),
+                    // Baris 2
+                    Grid::make(3)->schema([
+                        TextInput::make('kurang_1')
+                            ->label('Kurang 1')
+                            ->required()
+                            ->numeric(),
 
-                    TextInput::make('kurang_2')
-                        ->label('Kurang 2')
-                        ->required()
-                        ->numeric(),
-                    TextInput::make('kurang_3')
-                        ->label('Kurang 3')
-                        ->required()
-                        ->numeric(),
-                ])->columnSpan(12),
+                        TextInput::make('kurang_2')
+                            ->label('Kurang 2')
+                            ->required()
+                            ->numeric(),
+                    ])->columnSpan(12),
 
-                // Baris 3
-                Grid::make(3)->schema([
-                    TextInput::make('cukup_1')
-                        ->label('Cukup 1')
-                        ->required()
-                        ->numeric(),
-                    TextInput::make('cukup_2')
-                        ->label('Cukup 2')
-                        ->required()
-                        ->numeric(),
-                        TextInput::make('cukup_3')
-                        ->label('Cukup 3')
-                        ->required()
-                        ->numeric(),
-               
-                ])->columnSpan(12),
-                Grid::make(3)->schema([
+                    // Baris 3
+                    Grid::make(3)->schema([
+                        TextInput::make('cukup_1')
+                            ->label('Cukup 1')
+                            ->required()
+                            ->numeric(),
+                        TextInput::make('cukup_2')
+                            ->label('Cukup 2')
+                            ->required()
+                            ->numeric(),
+
+                    ])->columnSpan(12),
+                    Grid::make(3)->schema([
                         TextInput::make('baik_1')
-                        ->label('Baik 1')
-                        ->required()
-                        ->numeric(),
-                    TextInput::make('baik_2')
-                        ->label('Baik 2')
-                        ->required()
-                        ->numeric(),
-                    TextInput::make('baik_3')
-                        ->label('Baik 3')
-                        ->required()
-                        ->numeric(),
-               
-                ])->columnSpan(12),
-            ]),
-        ]);
-}
+                            ->label('Baik 1')
+                            ->required()
+                            ->numeric(),
+                        TextInput::make('baik_2')
+                            ->label('Baik 2')
+                            ->required()
+                            ->numeric(),
+
+                    ])->columnSpan(12),
+                ]),
+            ]);
+    }
 
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
+                TextColumn::make('no')
+                    ->label('No')
+                    ->rowIndex(),
                 TextColumn::make('nama_penilaian')
                     ->label('Nama Aspek')
                     ->searchable()
@@ -114,9 +106,6 @@ class AspekVariasiFormasiResource extends Resource
                 TextColumn::make('kurang_2')
                     ->label('Kurang 2')
                     ->sortable(),
-                TextColumn::make('kurang_3')
-                    ->label('Kurang 3')
-                    ->sortable(),
 
                 TextColumn::make('cukup_1')
                     ->label('Cukup 1')
@@ -124,9 +113,6 @@ class AspekVariasiFormasiResource extends Resource
 
                 TextColumn::make('cukup_2')
                     ->label('Cukup 2')
-                    ->sortable(),
-                TextColumn::make('cukup_3')
-                    ->label('Cukup 3')
                     ->sortable(),
 
                 TextColumn::make('baik_1')
@@ -136,20 +122,35 @@ class AspekVariasiFormasiResource extends Resource
                 TextColumn::make('baik_2')
                     ->label('Baik 2')
                     ->sortable(),
-                TextColumn::make('baik_3')
-                    ->label('Baik 3')
-                    ->sortable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('deleteGroup')
+                    ->label('Delete')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->action(function ($record) {
+                        \App\Models\PenilaianVariasiFormasi::where('id_aspek', $record->id)->delete();
+                        $record->delete();
+                    }),
             ])
+
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\BulkAction::make('deleteGroup')
+                    ->label('Delete')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->action(function ($records) {
+                        foreach ($records as $record) {
+                            \App\Models\PenilaianVariasiFormasi::where('id_aspek', $record->id)->delete();
+                            $record->delete();
+                        }
+                    }),
             ]);
     }
 

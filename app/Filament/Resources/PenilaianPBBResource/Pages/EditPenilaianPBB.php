@@ -16,13 +16,12 @@ class EditPenilaianPBB extends EditRecord
 
     protected function getHeaderActions(): array
     {
-        return [ Actions\DeleteAction::make() ];
+        return [Actions\DeleteAction::make()];
     }
 
-    /** Prefill form edit */
+    /** Prefill form saat edit */
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        // gunakan record yg sedang diedit (lebih aman daripada auth()->id())
         $pesertaId = $this->record->id_peserta;
         $userId    = $this->record->id_user;
 
@@ -31,9 +30,8 @@ class EditPenilaianPBB extends EditRecord
             ->get()
             ->keyBy('id_aspek');
 
-        $data['id_peserta'] = $pesertaId;
-
-        $data['penilaian_items'] = AspekPBB::all()->map(function ($a) use ($existing) {
+        // isi repeater dengan nilai yang sudah ada
+        $data['penilaian_items'] = AspekPBB::orderBy('id')->get()->map(function ($a) use ($existing) {
             return [
                 'id_aspek'   => $a->id,
                 'nama_aspek' => $a->nama_penilaian,
@@ -55,13 +53,21 @@ class EditPenilaianPBB extends EditRecord
             foreach ($items as $item) {
                 $aspekId = $item['id_aspek'] ?? null;
                 $raw     = $item['nilai']    ?? null;
-                if (!$aspekId || $raw === null || $raw === '') continue;
+                if (!$aspekId || $raw === null || $raw === '') {
+                    continue;
+                }
 
-                $nilai = is_numeric($raw) ? (int)$raw : null; // sekarang radio sudah angka
-                if ($nilai === null) continue;
+                $nilai = is_numeric($raw) ? (int) $raw : null;
+                if ($nilai === null) {
+                    continue;
+                }
 
                 PenilaianPBB::updateOrCreate(
-                    ['id_peserta' => $pesertaId, 'id_user' => $userId, 'id_aspek' => $aspekId],
+                    [
+                        'id_peserta' => $pesertaId,
+                        'id_user'    => $userId,
+                        'id_aspek'   => $aspekId,
+                    ],
                     ['nilai' => $nilai]
                 );
             }

@@ -26,6 +26,7 @@ class PenilaianTataRiasResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document';
     protected static ?string $navigationGroup = 'Penilaian';
+    protected static ?int $navigationSort = 5; 
     protected static ?string $navigationLabel = 'Penilaian TataRias';
     protected static ?string $modelLabel = 'Penilaian TataRias';
     protected static ?string $pluralModelLabel = 'Penilaian TataRias';
