@@ -20,7 +20,7 @@ class PenguranganNilaiResource extends Resource
     protected static ?string $model = PenguranganNilai::class;
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document';
     protected static ?string $navigationGroup = 'Penilaian';
-    protected static ?int $navigationSort = 6;
+    // protected static ?int $navigationSort = 7;
     protected static ?string $navigationLabel = 'Pengurangan Nilai';
 
     public static function form(Form $form): Form

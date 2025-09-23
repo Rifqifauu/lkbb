@@ -28,26 +28,44 @@ class PenilaianPBBResource extends Resource
     protected static ?string $model = PenilaianPBB::class;
 
     protected static ?string $navigationIcon   = 'heroicon-o-clipboard-document';
-    protected static ?string $navigationGroup = 'Penilaian — PBB';
-    protected static ?int    $navigationSort   = 1;
+    protected static ?string $navigationGroup = 'Penilaian - 01. PBB';
+    // protected static ?int    $navigationSort   = 8;
     protected static ?string $navigationLabel  = 'Penilaian PBB';
     protected static ?string $modelLabel       = 'Penilaian PBB';
     protected static ?string $pluralModelLabel = 'Penilaian PBB';
-    protected static bool $shouldRegisterNavigation = true; // <— sembunyikan menu default
+    protected static bool $shouldRegisterNavigation = true;
 
-
+    /** Map tingkat Peserta -> tingkat AspekPBB */
+    public static function mapToAspekTingkat(?string $tingkat): string
+    {
+        return $tingkat === 'sd' ? 'sd' : 'sltp_slta';
+    }
 
     public static function form(Form $form): Form
     {
         return $form->schema([
-            // ========== CREATE ONLY ==========
+            // CREATE ONLY
             Select::make('tingkat_picker')
                 ->label('Pilih Tingkat')
                 ->options(['sd' => 'SD', 'sltp' => 'SLTP', 'slta' => 'SLTA'])
                 ->live()
-                ->required(fn(string $operation) => $operation === 'create')
+                ->required(fn (string $operation) => $operation === 'create')
                 ->dehydrated(false)   // bukan kolom DB
-                ->hiddenOn('edit'),   // sembunyikan di edit
+                ->afterStateUpdated(function ($state, callable $set) {
+                    // Ketika tingkat diubah, rebuild item aspek sesuai kategori
+                    $aspekTingkat = static::mapToAspekTingkat($state);
+                    $items = AspekPBB::where('tingkat', $aspekTingkat)
+                        ->orderBy('id')
+                        ->get()
+                        ->map(fn ($a) => [
+                            'id_aspek'   => $a->id,
+                            'nama_aspek' => $a->nama_penilaian,
+                            'nilai'      => null,
+                        ])->toArray();
+
+                    $set('penilaian_items', $items);
+                })
+                ->hiddenOn('edit'),
 
             Select::make('id_peserta')
                 ->label('Pilih Peserta (No. Urut — Nama)')
@@ -55,8 +73,8 @@ class PenilaianPBBResource extends Resource
                     $tingkat = $get('tingkat_picker');
 
                     return Peserta::query()
-                        ->when($tingkat, fn($q) => $q->where('tingkat', $tingkat))
-                        ->whereDoesntHave('penilaianPbb', fn($q) => $q->where('id_user', auth()->id()))
+                        ->when($tingkat, fn ($q) => $q->where('tingkat', $tingkat))
+                        ->whereDoesntHave('penilaianPbb', fn ($q) => $q->where('id_user', auth()->id()))
                         ->orderBy('no_tampil')
                         ->get()
                         ->mapWithKeys(function (Peserta $p) {
@@ -68,12 +86,12 @@ class PenilaianPBBResource extends Resource
                 ->searchable()
                 ->preload()
                 ->live()
-                ->required(fn(string $operation) => $operation === 'create')
-                ->dehydrated(fn(string $operation) => $operation === 'create') // di edit jangan menyentuh relasi
+                ->required(fn (string $operation) => $operation === 'create')
+                ->dehydrated(fn (string $operation) => $operation === 'create')
                 ->hiddenOn('edit')
                 ->columnSpanFull(),
 
-            // ========== EDIT ONLY (INFO PESERTA) ==========
+            // EDIT ONLY - Info Peserta
             Placeholder::make('info_peserta')
                 ->label('Peserta')
                 ->content(function (?Model $record) {
@@ -86,14 +104,13 @@ class PenilaianPBBResource extends Resource
                 ->visibleOn('edit')
                 ->columnSpanFull(),
 
-            // ========== PENILAIAN PER ASPEK ==========
+            // PENILAIAN PER ASPEK
             Repeater::make('penilaian_items')
                 ->label('Penilaian Per Aspek')
                 ->schema([
                     Hidden::make('id_aspek'),
 
-                    Section::make(
-                        fn(Get $get) =>
+                    Section::make(fn (Get $get) =>
                         AspekPBB::find($get('id_aspek'))?->nama_penilaian ?? 'Aspek Penilaian'
                     )->schema([
                         Radio::make('nilai')
@@ -123,14 +140,22 @@ class PenilaianPBBResource extends Resource
                 ->disableItemDeletion()
                 ->disableItemMovement()
                 ->collapsible()
-                ->default(
-                    fn() =>
-                    AspekPBB::orderBy('id')->get()->map(fn($a) => [
-                        'id_aspek'   => $a->id,
-                        'nama_aspek' => $a->nama_penilaian,
-                        'nilai'      => null,
-                    ])->toArray()
-                )
+                // default awal: jika user sudah pilih tingkat → pakai filter; kalau belum, kosongkan
+                ->default(function (Get $get) {
+                    $tingkatPicker = $get('tingkat_picker'); // hanya ada di create
+                    if (!$tingkatPicker) {
+                        return []; // biarkan kosong sampai tingkat dipilih
+                    }
+                    $aspekTingkat = static::mapToAspekTingkat($tingkatPicker);
+                    return AspekPBB::where('tingkat', $aspekTingkat)
+                        ->orderBy('id')
+                        ->get()
+                        ->map(fn ($a) => [
+                            'id_aspek'   => $a->id,
+                            'nama_aspek' => $a->nama_penilaian,
+                            'nilai'      => null,
+                        ])->toArray();
+                })
                 ->columnSpanFull(),
         ]);
     }
@@ -145,12 +170,13 @@ class PenilaianPBBResource extends Resource
             Tables\Columns\TextColumn::make('peserta.tingkat')
                 ->label('Tingkat')
                 ->badge()
-                ->color(fn($state) => match ($state) {
+                ->color(fn ($state) => match ($state) {
                     'sltp' => 'danger',
                     'slta' => 'success',
                     default => 'gray',
                 })
-                ->formatStateUsing(fn($state) => strtoupper($state)),
+                ->formatStateUsing(fn ($state) => strtoupper($state)),
+
             Tables\Columns\TextColumn::make('peserta.nama')
                 ->label('Peserta')
                 ->sortable()
@@ -162,7 +188,7 @@ class PenilaianPBBResource extends Resource
                 ->searchable(),
         ];
 
-        // kolom dinamis per aspek
+        // kolom dinamis per aspek (semua aspek yang ada)
         foreach (AspekPBB::orderBy('id')->get() as $aspek) {
             $columns[] = Tables\Columns\TextColumn::make('aspek_' . $aspek->id)
                 ->label($aspek->nama_penilaian)
@@ -227,11 +253,11 @@ class PenilaianPBBResource extends Resource
             ]);
     }
 
-
     public static function getRelations(): array
     {
         return [];
     }
+
     public static function getNavigationItems(): array
     {
         return [

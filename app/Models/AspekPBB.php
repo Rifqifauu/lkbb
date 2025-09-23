@@ -10,6 +10,7 @@ class AspekPBB extends Model
 
     protected $fillable = [
         'nama_penilaian',
+        'tingkat',
         'kurang_1',
         'kurang_2',
         'kurang_3',

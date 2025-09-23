@@ -25,6 +25,7 @@ class AspekVariasiFormasiResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
     protected static ?string $navigationGroup = 'Aspek Penilaian';
     protected static ?string $navigationLabel = 'Formulasi Variasi Formasi';
+    //  protected static ?int    $navigationSort   = 2;
     public static function getModelLabel(): string
     {
         return 'Formulasi Variasi Formasi:'; // judul singular

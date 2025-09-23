@@ -27,8 +27,8 @@ class PenilaianDantonResource extends Resource
     protected static ?string $model = PenilaianDanton::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document';
-    protected static ?string $navigationGroup = 'Penilaian — Danton';
-    protected static ?int $navigationSort = 3;
+    protected static ?string $navigationGroup = 'Penilaian - 03. Danton';
+    // protected static ?int $navigationSort = 13;
     protected static ?string $navigationLabel = 'Penilaian Danton';
     protected static ?string $modelLabel = 'Penilaian Danton';
     protected static ?string $pluralModelLabel = 'Penilaian Danton';

@@ -24,6 +24,7 @@ class AspekDantonResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
     protected static ?string $navigationGroup = 'Aspek Penilaian';
      protected static ?string $navigationLabel = 'Formulasi Danton';
+      protected static ?int    $navigationSort   = 3;
     public static function getModelLabel(): string
     {
         return 'Formulasi Danton:'; // judul singular

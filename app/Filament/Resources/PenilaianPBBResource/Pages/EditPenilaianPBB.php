@@ -22,22 +22,25 @@ class EditPenilaianPBB extends EditRecord
     /** Prefill form saat edit */
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $pesertaId = $this->record->id_peserta;
-        $userId    = $this->record->id_user;
+        $peserta = $this->record->peserta()->first();
+        $targetAspekTingkat = PenilaianPBBResource::mapToAspekTingkat($peserta?->tingkat);
 
-        $existing = PenilaianPBB::where('id_peserta', $pesertaId)
-            ->where('id_user', $userId)
+        $existing = PenilaianPBB::where('id_peserta', $this->record->id_peserta)
+            ->where('id_user', $this->record->id_user)
             ->get()
             ->keyBy('id_aspek');
 
-        // isi repeater dengan nilai yang sudah ada
-        $data['penilaian_items'] = AspekPBB::orderBy('id')->get()->map(function ($a) use ($existing) {
-            return [
-                'id_aspek'   => $a->id,
-                'nama_aspek' => $a->nama_penilaian,
-                'nilai'      => optional($existing->get($a->id))->nilai, // angka -> radio auto-centang
-            ];
-        })->toArray();
+        // Hanya aspek sesuai kategori
+        $data['penilaian_items'] = AspekPBB::where('tingkat', $targetAspekTingkat)
+            ->orderBy('id')
+            ->get()
+            ->map(function ($a) use ($existing) {
+                return [
+                    'id_aspek'   => $a->id,
+                    'nama_aspek' => $a->nama_penilaian,
+                    'nilai'      => optional($existing->get($a->id))->nilai,
+                ];
+            })->toArray();
 
         return $data;
     }
