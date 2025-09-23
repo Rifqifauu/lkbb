@@ -26,7 +26,7 @@ class PenilaianVariasiFormasiResource extends Resource
     protected static ?string $model = PenilaianVariasiFormasi::class;
 
     protected static ?string $navigationIcon   = 'heroicon-o-clipboard-document';
-    protected static ?string $navigationGroup  = 'Penilaian';
+    protected static ?string $navigationGroup = 'Penilaian — Variasi Formasi';
     protected static ?int    $navigationSort   = 2;
     protected static ?string $navigationLabel  = 'Penilaian VariasiFormasi';
     protected static ?string $modelLabel       = 'Penilaian VariasiFormasi';
@@ -44,7 +44,7 @@ class PenilaianVariasiFormasiResource extends Resource
                     'slta' => 'SLTA',
                 ])
                 ->live()
-                ->required(fn (string $operation) => $operation === 'create')
+                ->required(fn(string $operation) => $operation === 'create')
                 ->dehydrated(false)
                 ->hiddenOn('edit'),
 
@@ -55,8 +55,8 @@ class PenilaianVariasiFormasiResource extends Resource
                     $tingkat = $get('tingkat_picker');
 
                     return Peserta::query()
-                        ->when($tingkat, fn ($q) => $q->where('tingkat', $tingkat))
-                        ->whereDoesntHave('penilaianVariasiFormasi', fn ($q) => $q->where('id_user', auth()->id()))
+                        ->when($tingkat, fn($q) => $q->where('tingkat', $tingkat))
+                        ->whereDoesntHave('penilaianVariasiFormasi', fn($q) => $q->where('id_user', auth()->id()))
                         ->orderBy('no_tampil')
                         ->get()
                         ->mapWithKeys(function ($p) {
@@ -67,8 +67,8 @@ class PenilaianVariasiFormasiResource extends Resource
                 })
                 ->searchable()
                 ->preload()
-                ->required(fn (string $operation) => $operation === 'create')
-                ->dehydrated(fn (string $operation) => $operation === 'create')
+                ->required(fn(string $operation) => $operation === 'create')
+                ->dehydrated(fn(string $operation) => $operation === 'create')
                 ->hiddenOn('edit')
                 ->columnSpanFull(),
 
@@ -125,7 +125,7 @@ class PenilaianVariasiFormasiResource extends Resource
                 ->default(function () {
                     return AspekVariasiFormasi::orderBy('id')
                         ->get()
-                        ->map(fn ($a) => [
+                        ->map(fn($a) => [
                             'id_aspek'   => $a->id,
                             'nama_aspek' => $a->nama_penilaian,
                             'nilai'      => null,
@@ -139,18 +139,18 @@ class PenilaianVariasiFormasiResource extends Resource
     {
         $columns = [
             Tables\Columns\TextColumn::make('peserta.no_tampil')
-                ->label('No.')
+                ->label('No Urut.')
                 ->sortable(),
 
             Tables\Columns\TextColumn::make('peserta.tingkat')
                 ->label('Tingkat')
                 ->badge()
-                ->color(fn ($state) => match ($state) {
+                ->color(fn($state) => match ($state) {
                     'sltp' => 'danger',
                     'slta' => 'success',
                     default => 'gray',
                 })
-                ->formatStateUsing(fn ($state) => strtoupper($state)),
+                ->formatStateUsing(fn($state) => strtoupper($state)),
 
             Tables\Columns\TextColumn::make('peserta.nama')
                 ->label('Peserta')
@@ -234,12 +234,40 @@ class PenilaianVariasiFormasiResource extends Resource
         return [];
     }
 
+    public static function getNavigationItems(): array
+    {
+        return [
+            \Filament\Navigation\NavigationItem::make('Variasi Formasi — Semua')
+                ->group(static::getNavigationGroup())
+                ->icon(static::getNavigationIcon())
+                ->url(static::getUrl('index')),
+
+            \Filament\Navigation\NavigationItem::make('Variasi Formasi — SD')
+                ->group(static::getNavigationGroup())
+                ->icon('heroicon-o-academic-cap')
+                ->url(static::getUrl('sd')),
+
+            \Filament\Navigation\NavigationItem::make('Variasi Formasi — SLTP')
+                ->group(static::getNavigationGroup())
+                ->icon('heroicon-o-academic-cap')
+                ->url(static::getUrl('sltp')),
+
+            \Filament\Navigation\NavigationItem::make('Variasi Formasi — SLTA')
+                ->group(static::getNavigationGroup())
+                ->icon('heroicon-o-academic-cap')
+                ->url(static::getUrl('slta')),
+        ];
+    }
+
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListPenilaianVariasiFormasis::route('/'),
+            'index' => Pages\ListPenilaianVariasiFormasis::route('/'),
+            'sd'    => Pages\ListPenilaianVariasiFormasiSD::route('/sd'),
+            'sltp'  => Pages\ListPenilaianVariasiFormasiSLTP::route('/sltp'),
+            'slta'  => Pages\ListPenilaianVariasiFormasiSLTA::route('/slta'),
             'create' => Pages\CreatePenilaianVariasiFormasi::route('/create'),
-            'edit'   => Pages\EditPenilaianVariasiFormasi::route('/{record}/edit'),
+            'edit'  => Pages\EditPenilaianVariasiFormasi::route('/{record}/edit'),
         ];
     }
 }

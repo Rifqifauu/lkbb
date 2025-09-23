@@ -28,7 +28,7 @@ class PenilaianPBBResource extends Resource
     protected static ?string $model = PenilaianPBB::class;
 
     protected static ?string $navigationIcon   = 'heroicon-o-clipboard-document';
-    protected static ?string $navigationGroup  = 'Penilaian';
+    protected static ?string $navigationGroup = 'Penilaian — PBB';
     protected static ?int    $navigationSort   = 1;
     protected static ?string $navigationLabel  = 'Penilaian PBB';
     protected static ?string $modelLabel       = 'Penilaian PBB';
@@ -138,6 +138,19 @@ class PenilaianPBBResource extends Resource
     public static function table(Table $table): Table
     {
         $columns = [
+            Tables\Columns\TextColumn::make('peserta.no_tampil')
+                ->label('No Urut.')
+                ->sortable(),
+
+            Tables\Columns\TextColumn::make('peserta.tingkat')
+                ->label('Tingkat')
+                ->badge()
+                ->color(fn($state) => match ($state) {
+                    'sltp' => 'danger',
+                    'slta' => 'success',
+                    default => 'gray',
+                })
+                ->formatStateUsing(fn($state) => strtoupper($state)),
             Tables\Columns\TextColumn::make('peserta.nama')
                 ->label('Peserta')
                 ->sortable()

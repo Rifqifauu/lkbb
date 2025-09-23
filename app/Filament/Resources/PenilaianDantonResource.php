@@ -27,12 +27,12 @@ class PenilaianDantonResource extends Resource
     protected static ?string $model = PenilaianDanton::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document';
-    protected static ?string $navigationGroup = 'Penilaian';
+    protected static ?string $navigationGroup = 'Penilaian — Danton';
     protected static ?int $navigationSort = 3;
     protected static ?string $navigationLabel = 'Penilaian Danton';
     protected static ?string $modelLabel = 'Penilaian Danton';
     protected static ?string $pluralModelLabel = 'Penilaian Danton';
-    
+
 
     public static function form(Form $form): Form
     {
@@ -139,6 +139,19 @@ class PenilaianDantonResource extends Resource
     {
         // >>> Versi PR (dipertahankan)
         $columns = [
+            Tables\Columns\TextColumn::make('peserta.no_tampil')
+                ->label('No Urut.')
+                ->sortable(),
+
+            Tables\Columns\TextColumn::make('peserta.tingkat')
+                ->label('Tingkat')
+                ->badge()
+                ->color(fn($state) => match ($state) {
+                    'sltp' => 'danger',
+                    'slta' => 'success',
+                    default => 'gray',
+                })
+                ->formatStateUsing(fn($state) => strtoupper($state)),
             Tables\Columns\TextColumn::make('peserta.nama')
                 ->label('Peserta')
                 ->searchable()
@@ -180,9 +193,26 @@ class PenilaianDantonResource extends Resource
         }
 
         return $table
-            ->query(
-                PenilaianDanton::query()->with(['peserta', 'penilai', 'aspek'])
-            )
+            // ->query(
+            //     PenilaianDanton::query()->with(['peserta', 'penilai', 'aspek'])
+            // )
+            // ->modifyQueryUsing(function (Builder $query) {
+            //     $user    = Auth::user();
+            //     $isAdmin = $user->hasAnyRole('super_admin', 'admin panitia')
+            //         || $user->can('view all penilaian');
+
+            //     if (! $isAdmin) {
+            //         $query->where('id_user', $user->id);
+            //     }
+
+            //     $tableName = (new PenilaianDanton)->getTable();
+
+            //     $query->selectRaw("MIN(id) AS id, id_peserta, id_user")
+            //         ->from($tableName)
+            //         ->groupBy('id_peserta', 'id_user')
+            //         ->orderBy('id_peserta')
+            //         ->orderBy('id_user');
+            // })
             ->modifyQueryUsing(function (Builder $query) {
                 $user    = Auth::user();
                 $isAdmin = $user->hasAnyRole('super_admin', 'admin panitia')
@@ -200,6 +230,7 @@ class PenilaianDantonResource extends Resource
                     ->orderBy('id_peserta')
                     ->orderBy('id_user');
             })
+
             ->defaultSort('id_peserta')
             ->columns($columns)
             ->filters([
@@ -223,10 +254,39 @@ class PenilaianDantonResource extends Resource
         return [];
     }
 
+    public static function getNavigationItems(): array
+    {
+        return [
+            \Filament\Navigation\NavigationItem::make('Danton — Semua')
+                ->group(static::getNavigationGroup())
+                ->icon(static::getNavigationIcon())
+                ->url(static::getUrl('index')),
+
+            \Filament\Navigation\NavigationItem::make('Danton — SD')
+                ->group(static::getNavigationGroup())
+                ->icon('heroicon-o-academic-cap')
+                ->url(static::getUrl('sd')),
+
+            \Filament\Navigation\NavigationItem::make('Danton — SLTP')
+                ->group(static::getNavigationGroup())
+                ->icon('heroicon-o-academic-cap')
+                ->url(static::getUrl('sltp')),
+
+            \Filament\Navigation\NavigationItem::make('Danton — SLTA')
+                ->group(static::getNavigationGroup())
+                ->icon('heroicon-o-academic-cap')
+                ->url(static::getUrl('slta')),
+        ];
+    }
+
+
     public static function getPages(): array
     {
         return [
             'index'  => Pages\ListPenilaianDantons::route('/'),
+            'sd'     => Pages\ListPenilaianDantonSD::route('/sd'),
+            'sltp'   => Pages\ListPenilaianDantonSLTP::route('/sltp'),
+            'slta'   => Pages\ListPenilaianDantonSLTA::route('/slta'),
             'create' => Pages\CreatePenilaianDanton::route('/create'),
             'edit'   => Pages\EditPenilaianDanton::route('/{record}/edit'),
         ];
