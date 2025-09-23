@@ -6,8 +6,11 @@ use App\Filament\Resources\RekapNilaiResource\Pages;
 use App\Models\PenguranganNilai;
 use App\Models\RekapNilai;
 use App\Models\Peserta;
-use App\Models\PenilaianPBB;      // pakai versi PR
-use App\Models\PenilaianDanton;   // pakai versi PR
+use App\Models\PenilaianPBB;
+use App\Models\PenilaianDanton;
+use App\Models\PenilaianSeragam;
+use App\Models\PenilaianTataRias;
+use App\Models\PenilaianVariasiFormasi;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -29,7 +32,7 @@ class RekapNilaiResource extends Resource
     {
         return $form->schema([
             Select::make('id_peserta')
-                ->options(fn () => Peserta::pluck('nama', 'id'))
+                ->options(fn() => Peserta::pluck('nama', 'id'))
                 ->required()
                 ->label('Peserta'),
 
@@ -53,72 +56,103 @@ class RekapNilaiResource extends Resource
                     ->sortable()
                     ->suffix(' Menit'),
 
-                // ===== NILAI PBB: sum semua juri & aspek untuk peserta ini =====
+                // ===== NILAI PBB =====
                 TextColumn::make('nilai_pbb')
                     ->label('Nilai PBB')
                     ->getStateUsing(
-                        fn ($record) =>
+                        fn($record) =>
                         (int) PenilaianPBB::where('id_peserta', $record->id_peserta)->sum('nilai')
                     )
                     ->sortable(),
 
-                // ===== NILAI DANTON: sum semua juri & aspek =====
+                // ===== NILAI DANTON =====
                 TextColumn::make('nilai_danton')
                     ->label('Nilai Danton')
                     ->getStateUsing(
-                        fn ($record) =>
+                        fn($record) =>
                         (int) PenilaianDanton::where('id_peserta', $record->id_peserta)->sum('nilai')
                     )
                     ->sortable(),
 
-                // Sementara ambil dari field rekap (kalau ada tabel khusus tinggal samakan pola di atas)
+                // ===== NILAI KOSTUM =====
                 TextColumn::make('nilai_kostum')
                     ->label('Nilai Kostum')
-                    ->formatStateUsing(fn ($state) => (string) ((int) ($state ?? 0)))
+                    ->getStateUsing(
+                        fn($record) =>
+                        (int) PenilaianSeragam::where('id_peserta', $record->id_peserta)->sum('nilai')
+                    )
                     ->sortable(),
 
+                // ===== NILAI TATA RIAS =====
                 TextColumn::make('nilai_tata_rias')
                     ->label('Nilai Tata Rias')
-                    ->formatStateUsing(fn ($state) => (string) ((int) ($state ?? 0)))
+                    ->getStateUsing(
+                        fn($record) =>
+                        (int) PenilaianTataRias::where('id_peserta', $record->id_peserta)->sum('nilai')
+                    )
                     ->sortable(),
 
+                // ===== NILAI VARIASI FORMASI =====
                 TextColumn::make('nilai_variasi_formasi')
                     ->label('Nilai Variasi Formasi')
-                    ->formatStateUsing(fn ($state) => (string) ((int) ($state ?? 0)))
+                    ->getStateUsing(
+                        fn($record) =>
+                        (int) PenilaianVariasiFormasi::where('id_peserta', $record->id_peserta)->sum('nilai')
+                    )
                     ->sortable(),
 
+                // ===== PENGURANGAN =====
                 TextColumn::make('nilai_pengurangan')
                     ->label('Pengurangan')
                     ->getStateUsing(function ($record) {
-                        return PenguranganNilai::where('id_peserta', $record->id_peserta)
-                            ->join('aspek_pengurangan_nilai', 'pengurangan_nilai.id_aspek', '=', 'aspek_pengurangan_nilai.id')
-                            ->sum('aspek_pengurangan_nilai.pengurangan');
+                        return (int) PenguranganNilai::where('id_peserta', $record->id_peserta)
+                            ->get()
+                            ->sum(fn($p) => $p->nilai_pengurangan);   // ✅ pakai accessor
                     })
                     ->sortable(),
 
-                // ===== TOTAL UTAMA: PBB + Danton + (kategori lain jika ada) =====
+                // ===== TOTAL UTAMA =====
                 TextColumn::make('total_utama')
                     ->label('Total Utama')
                     ->getStateUsing(function ($record) {
                         $pbb      = (int) PenilaianPBB::where('id_peserta', $record->id_peserta)->sum('nilai');
                         $danton   = (int) PenilaianDanton::where('id_peserta', $record->id_peserta)->sum('nilai');
-                        $kostum   = (int) ($record->nilai_kostum ?? 0);
-                        $tataRias = (int) ($record->nilai_tata_rias ?? 0);
-                        $variasi  = (int) ($record->nilai_variasi_formasi ?? 0);
+                        $kostum   = (int) PenilaianSeragam::where('id_peserta', $record->id_peserta)->sum('nilai');
+                        $tataRias = (int) PenilaianTataRias::where('id_peserta', $record->id_peserta)->sum('nilai');
+                        $variasi  = (int) PenilaianVariasiFormasi::where('id_peserta', $record->id_peserta)->sum('nilai');
 
                         return $pbb + $danton + $kostum + $tataRias + $variasi;
                     })
                     ->sortable(),
 
-                // ===== TOTAL UMUM: Total Utama - Pengurangan =====
+                // ===== TOTAL UMUM =====
                 TextColumn::make('total_umum')
                     ->label('Total Umum')
                     ->getStateUsing(function ($record) {
-                        $pbb       = (int) PenilaianPBB::where('id_peserta', $record->id_peserta)->sum('nilai');
-                        $danton    = (int) PenilaianDanton::where('id_peserta', $record->id_peserta)->sum('nilai');
-                        $kostum    = (int) ($record->nilai_kostum ?? 0);
-                        $tataRias  = (int) ($record->nilai_tata_rias ?? 0);
-                        $variasi   = (int) ($record->nilai_variasi_formasi ?? 0);
+                        $pbb      = (int) PenilaianPBB::where('id_peserta', $record->id_peserta)->sum('nilai');
+                        $danton   = (int) PenilaianDanton::where('id_peserta', $record->id_peserta)->sum('nilai');
+                        $kostum   = (int) PenilaianSeragam::where('id_peserta', $record->id_peserta)->sum('nilai');
+                        $tataRias = (int) PenilaianTataRias::where('id_peserta', $record->id_peserta)->sum('nilai');
+                        $variasi  = (int) PenilaianVariasiFormasi::where('id_peserta', $record->id_peserta)->sum('nilai');
+
+                        $pengurang = (int) PenguranganNilai::where('id_peserta', $record->id_peserta)
+                            ->get()
+                            ->sum(fn($p) => $p->nilai_pengurangan);   // ✅ pakai accessor
+
+                        return $pbb + $danton + $kostum + $tataRias + $variasi - $pengurang;
+                    })
+                    ->sortable(),
+
+
+                // ===== TOTAL UMUM =====
+                TextColumn::make('total_umum')
+                    ->label('Total Umum')
+                    ->getStateUsing(function ($record) {
+                        $pbb      = (int) PenilaianPBB::where('id_peserta', $record->id_peserta)->sum('nilai');
+                        $danton   = (int) PenilaianDanton::where('id_peserta', $record->id_peserta)->sum('nilai');
+                        $kostum   = (int) PenilaianSeragam::where('id_peserta', $record->id_peserta)->sum('nilai');
+                        $tataRias = (int) PenilaianTataRias::where('id_peserta', $record->id_peserta)->sum('nilai');
+                        $variasi  = (int) PenilaianVariasiFormasi::where('id_peserta', $record->id_peserta)->sum('nilai');
                         $pengurang = (int) PenguranganNilai::where('id_peserta', $record->id_peserta)
                             ->join('aspek_pengurangan_nilai', 'pengurangan_nilai.id_aspek', '=', 'aspek_pengurangan_nilai.id')
                             ->sum('aspek_pengurangan_nilai.pengurangan');

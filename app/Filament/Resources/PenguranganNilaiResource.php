@@ -20,7 +20,7 @@ class PenguranganNilaiResource extends Resource
     protected static ?string $model = PenguranganNilai::class;
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document';
     protected static ?string $navigationGroup = 'Penilaian';
-    protected static ?int $navigationSort = 6; 
+    protected static ?int $navigationSort = 6;
     protected static ?string $navigationLabel = 'Pengurangan Nilai';
 
     public static function form(Form $form): Form
@@ -65,29 +65,10 @@ class PenguranganNilaiResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                // Menampilkan nilai pengurangan (langsung atau perhitungan)
+                // ✅ langsung pakai accessor dari model
                 TextColumn::make('nilai_pengurangan')
                     ->label('Nilai Pengurangan')
-                    ->alignCenter()
-                    ->getStateUsing(function ($record) {
-                        $aspek = $record->aspek;
-
-                        // Kalau aspek punya pengurangan langsung
-                        if (!is_null($aspek->pengurangan)) {
-                            return $aspek->pengurangan;
-                        }
-
-                        // Hitung berdasarkan per durasi / per anggota
-                        $total = 0;
-                        if (!is_null($aspek->per_durasi) && $record->durasi_penalti) {
-                            $total += $aspek->per_durasi * $record->durasi_penalti;
-                        }
-                        if (!is_null($aspek->per_anggota) && $record->jml_anggota_penalti) {
-                            $total += $aspek->per_anggota * $record->jml_anggota_penalti;
-                        }
-
-                        return $total ?: '-';
-                    }),
+                    ->alignCenter(),
 
                 TextColumn::make('created_at')
                     ->label('Tanggal')
