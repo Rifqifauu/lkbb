@@ -8,205 +8,147 @@ use Carbon\Carbon;
 
 class AspekPBBSeeder extends Seeder
 {
+    /**
+     * Batas total maksimum PBB untuk SATU juri.
+     * 3200 total untuk 3 juri => 1066.66.. -> kita pakai 1066 agar tidak pernah melewati.
+     */
+    private const KUOTA_PER_JURI = 1066; // ubah jika kebijakan berubah
+
     public function run(): void
     {
-        DB::table('aspek_pbb')->insert([
-            [
-                'nama_penilaian' => 'Langkah Tegap',
-                'kurang_1' => 42, 'kurang_2' => 44, 'kurang_3' => 46,
-                'cukup_1' => 48, 'cukup_2' => 50, 'cukup_3' => 52,
-                'baik_1' => 54, 'baik_2' => 56, 'baik_3' => 58,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => 'Tiap-tiap Banjar 2x Belok Kanan',
-                'kurang_1' => 48, 'kurang_2' => 50, 'kurang_3' => 52,
-                'cukup_1' => 54, 'cukup_2' => 56, 'cukup_3' => 58,
-                'baik_1' => 60, 'baik_2' => 62, 'baik_3' => 64,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => 'Hormat Kanan',
-                'kurang_1' => 47, 'kurang_2' => 49, 'kurang_3' => 51,
-                'cukup_1' => 53, 'cukup_2' => 55, 'cukup_3' => 57,
-                'baik_1' => 59, 'baik_2' => 61, 'baik_3' => 63,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => 'Tiap-tiap Banjar 2x Belok Kiri',
-                'kurang_1' => 48, 'kurang_2' => 50, 'kurang_3' => 52,
-                'cukup_1' => 54, 'cukup_2' => 56, 'cukup_3' => 58,
-                'baik_1' => 60, 'baik_2' => 62, 'baik_3' => 64,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => 'Ganti Langkah',
-                'kurang_1' => 42, 'kurang_2' => 44, 'kurang_3' => 46,
-                'cukup_1' => 48, 'cukup_2' => 50, 'cukup_3' => 52,
-                'baik_1' => 54, 'baik_2' => 56, 'baik_3' => 58,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => 'Henti Gerak',
-                'kurang_1' => 30, 'kurang_2' => 32, 'kurang_3' => 34,
-                'cukup_1' => 36, 'cukup_2' => 38, 'cukup_3' => 40,
-                'baik_1' => 42, 'baik_2' => 44, 'baik_3' => 46,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => 'Lari',
-                'kurang_1' => 42, 'kurang_2' => 44, 'kurang_3' => 46,
-                'cukup_1' => 48, 'cukup_2' => 50, 'cukup_3' => 52,
-                'baik_1' => 54, 'baik_2' => 56, 'baik_3' => 58,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => 'Langkah Biasa',
-                'kurang_1' => 42, 'kurang_2' => 44, 'kurang_3' => 46,
-                'cukup_1' => 48, 'cukup_2' => 50, 'cukup_3' => 52,
-                'baik_1' => 54, 'baik_2' => 56, 'baik_3' => 58,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => 'Langkah Perlahan',
-                'kurang_1' => 44, 'kurang_2' => 46, 'kurang_3' => 48,
-                'cukup_1' => 50, 'cukup_2' => 52, 'cukup_3' => 54,
-                'baik_1' => 56, 'baik_2' => 58, 'baik_3' => 60,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => 'Lencang Depan',
-                'kurang_1' => 32, 'kurang_2' => 34, 'kurang_3' => 36,
-                'cukup_1' => 38, 'cukup_2' => 40, 'cukup_3' => 42,
-                'baik_1' => 44, 'baik_2' => 46, 'baik_3' => 48,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => 'Buka Barisan',
-                'kurang_1' => 38, 'kurang_2' => 40, 'kurang_3' => 42,
-                'cukup_1' => 44, 'cukup_2' => 46, 'cukup_3' => 48,
-                'baik_1' => 50, 'baik_2' => 52, 'baik_3' => 54,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => 'Tutup Barisan',
-                'kurang_1' => 38, 'kurang_2' => 40, 'kurang_3' => 42,
-                'cukup_1' => 44, 'cukup_2' => 46, 'cukup_3' => 48,
-                'baik_1' => 50, 'baik_2' => 52, 'baik_3' => 54,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => 'Hadap Kiri',
-                'kurang_1' => 32, 'kurang_2' => 34, 'kurang_3' => 36,
-                'cukup_1' => 38, 'cukup_2' => 40, 'cukup_3' => 42,
-                'baik_1' => 44, 'baik_2' => 46, 'baik_3' => 48,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => 'Setengah Lencang Kanan',
-                'kurang_1' => 37, 'kurang_2' => 39, 'kurang_3' => 41,
-                'cukup_1' => 43, 'cukup_2' => 45, 'cukup_3' => 47,
-                'baik_1' => 49, 'baik_2' => 51, 'baik_3' => 53,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => 'Lencang Kanan',
-                'kurang_1' => 36, 'kurang_2' => 38, 'kurang_3' => 40,
-                'cukup_1' => 42, 'cukup_2' => 44, 'cukup_3' => 46,
-                'baik_1' => 48, 'baik_2' => 50, 'baik_3' => 52,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => 'Berhitung',
-                'kurang_1' => 34, 'kurang_2' => 36, 'kurang_3' => 38,
-                'cukup_1' => 40, 'cukup_2' => 42, 'cukup_3' => 44,
-                'baik_1' => 46, 'baik_2' => 48, 'baik_3' => 50,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => 'Hormat',
-                'kurang_1' => 35, 'kurang_2' => 37, 'kurang_3' => 39,
-                'cukup_1' => 41, 'cukup_2' => 43, 'cukup_3' => 45,
-                'baik_1' => 47, 'baik_2' => 49, 'baik_3' => 51,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => 'Hadap Serong Kanan',
-                'kurang_1' => 32, 'kurang_2' => 34, 'kurang_3' => 36,
-                'cukup_1' => 38, 'cukup_2' => 40, 'cukup_3' => 42,
-                'baik_1' => 44, 'baik_2' => 46, 'baik_3' => 48,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => 'Parade Istirahat Ditempat',
-                'kurang_1' => 32, 'kurang_2' => 34, 'kurang_3' => 36,
-                'cukup_1' => 38, 'cukup_2' => 40, 'cukup_3' => 42,
-                'baik_1' => 44, 'baik_2' => 46, 'baik_3' => 48,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => 'Istirahat di Tempat',
-                'kurang_1' => 32, 'kurang_2' => 34, 'kurang_3' => 36,
-                'cukup_1' => 38, 'cukup_2' => 40, 'cukup_3' => 42,
-                'baik_1' => 44, 'baik_2' => 46, 'baik_3' => 48,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => 'Periksa Kerapihan',
-                'kurang_1' => 42, 'kurang_2' => 44, 'kurang_3' => 46,
-                'cukup_1' => 48, 'cukup_2' => 50, 'cukup_3' => 52,
-                'baik_1' => 54, 'baik_2' => 56, 'baik_3' => 58,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => 'Hadap Serong Kiri',
-                'kurang_1' => 32, 'kurang_2' => 34, 'kurang_3' => 36,
-                'cukup_1' => 38, 'cukup_2' => 40, 'cukup_3' => 42,
-                'baik_1' => 44, 'baik_2' => 46, 'baik_3' => 48,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => '4 Langkah ke Kanan',
-                'kurang_1' => 34, 'kurang_2' => 36, 'kurang_3' => 38,
-                'cukup_1' => 40, 'cukup_2' => 42, 'cukup_3' => 44,
-                'baik_1' => 46, 'baik_2' => 48, 'baik_3' => 50,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => '4 Langkah ke Belakang',
-                'kurang_1' => 34, 'kurang_2' => 36, 'kurang_3' => 38,
-                'cukup_1' => 40, 'cukup_2' => 42, 'cukup_3' => 44,
-                'baik_1' => 46, 'baik_2' => 48, 'baik_3' => 50,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => '3 Langkah ke Kiri',
-                'kurang_1' => 32, 'kurang_2' => 33, 'kurang_3' => 34,
-                'cukup_1' => 35, 'cukup_2' => 36, 'cukup_3' => 37,
-                'baik_1' => 38, 'baik_2' => 39, 'baik_3' => 40,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => '2 Langkah ke Depan',
-                'kurang_1' => 31, 'kurang_2' => 33, 'kurang_3' => 35,
-                'cukup_1' => 37, 'cukup_2' => 39, 'cukup_3' => 41,
-                'baik_1' => 43, 'baik_2' => 45, 'baik_3' => 47,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => 'Bubar',
-                'kurang_1' => 38, 'kurang_2' => 40, 'kurang_3' => 42,
-                'cukup_1' => 44, 'cukup_2' => 46, 'cukup_3' => 48,
-                'baik_1' => 50, 'baik_2' => 52, 'baik_3' => 54,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-            [
-                'nama_penilaian' => 'Berkumpul',
-                'kurang_1' => 46, 'kurang_2' => 48, 'kurang_3' => 50,
-                'cukup_1' => 52, 'cukup_2' => 54, 'cukup_3' => 56,
-                'baik_1' => 58, 'baik_2' => 60, 'baik_3' => 62,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
-            ],
-        ]);
+        // 1) Template daftar aspek SMP+SMA (gabungan sltp_slta)
+        $aspekList = [
+            'Langkah Biasa',
+            'Ganti Langkah',
+            'Belok Kanan',
+            'Hadap Kanan Maju',
+            'Lari',
+            'Balik Kanan Langkah Biasa',
+            'Langkah Perlahan',
+            'Haluan Kanan',
+            'Hadap Kanan Maju',
+            'Dua Kali Belok Kanan',
+            'Tiap-Tiap Banjar 2x Belok Kanan',
+            'Hormat Kanan',
+            'Tiap-Tiap Banjar 2x Belok Kiri',
+            'Henti',
+            'Lencang Depan',
+            'Buka Barisan',
+            'Tutup Barisan',
+            'Hadap Serong Kiri',
+            'Istirahat Ditempat',
+            'Parade Istirahat Ditempat',
+            'Periksa Kerapihan',
+            'Balik Kanan Jalan Ditempat',
+            'Hadap Serong Kanan',
+            'Hadap Kanan Henti',
+            'Hitung',
+            'Setengah Lengan Lencang Kanan',
+            'Lencang Kiri',
+            '2 Langkah Ke Kanan',
+            '4 Langkah Ke Kiri',
+            '4 Langkah Kebelakang',
+            '3 Langkah Ke Depan',
+            'Hormat',
+            'Bubar',
+            'Berkumpul',
+        ];
+
+        // 2) Nilai dasar (akan di-skala)
+        $base = [
+            'kurang_1' => 40,
+            'kurang_2' => 42,
+            'kurang_3' => 44,
+            'cukup_1'  => 46,
+            'cukup_2'  => 48,
+            'cukup_3'  => 50,
+            'baik_1'   => 52,
+            'baik_2'   => 54,
+            'baik_3'   => 56,
+        ];
+
+        // 3) Bangun array data awal
+        $now = Carbon::now();
+        $rows = [];
+        foreach ($aspekList as $aspek) {
+            $rows[] = array_merge([
+                'nama_penilaian' => $aspek,
+                'tingkat'        => 'sltp_slta',
+                'created_at'     => $now,
+                'updated_at'     => $now,
+            ], $base);
+        }
+
+        // 4) Hitung total maksimum saat ini (pakai kolom paling tinggi: baik_3)
+        $totalAwal = array_sum(array_column($rows, 'baik_3'));
+
+        // 5) Jika total melewati kuota per juri, lakukan scaling & distribusi sisa
+        if ($totalAwal > self::KUOTA_PER_JURI) {
+            $k = self::KUOTA_PER_JURI / $totalAwal;   // faktor skala
+
+            // scale semua kolom (pakai floor agar tidak over-cap)
+            foreach ($rows as &$r) {
+                $vals = [
+                    'kurang_1' => (int) floor($r['kurang_1'] * $k),
+                    'kurang_2' => (int) floor($r['kurang_2'] * $k),
+                    'kurang_3' => (int) floor($r['kurang_3'] * $k),
+                    'cukup_1'  => (int) floor($r['cukup_1']  * $k),
+                    'cukup_2'  => (int) floor($r['cukup_2']  * $k),
+                    'cukup_3'  => (int) floor($r['cukup_3']  * $k),
+                    'baik_1'   => (int) floor($r['baik_1']   * $k),
+                    'baik_2'   => (int) floor($r['baik_2']   * $k),
+                    'baik_3'   => (int) floor($r['baik_3']   * $k),
+                ];
+
+                // Pastikan urutan naik (kurang_1 < ... < baik_3)
+                $keys = array_keys($vals);
+                for ($i = 1; $i < count($keys); $i++) {
+                    if ($vals[$keys[$i]] <= $vals[$keys[$i - 1]]) {
+                        $vals[$keys[$i]] = $vals[$keys[$i - 1]] + 1;
+                    }
+                }
+
+                foreach ($vals as $kField => $v) {
+                    $r[$kField] = $v;
+                }
+            }
+            unset($r);
+
+            // cek total setelah floor + penjajaran
+            $sumNow = array_sum(array_column($rows, 'baik_3'));
+            $defisit = self::KUOTA_PER_JURI - $sumNow;
+
+            // distribusikan sisa +1 ke beberapa baris (naikkan trio "baik" agar smooth)
+            // urutkan baris dengan "gap" besar antara baik_3 dan baik_2 agar tetap wajar
+            if ($defisit > 0) {
+                usort($rows, function ($a, $b) {
+                    $gapA = $a['baik_3'] - $a['baik_2'];
+                    $gapB = $b['baik_3'] - $b['baik_2'];
+                    // prioritas yang gap-nya kecil (biar naiknya rata)
+                    return $gapA <=> $gapB;
+                });
+
+                $i = 0;
+                $n = count($rows);
+                while ($defisit > 0 && $n > 0) {
+                    $rows[$i]['baik_1'] += 1;
+                    $rows[$i]['baik_2'] += 1;
+                    $rows[$i]['baik_3'] += 1;
+                    // jaga urutan
+                    if ($rows[$i]['baik_2'] <= $rows[$i]['baik_1']) $rows[$i]['baik_2'] = $rows[$i]['baik_1'] + 1;
+                    if ($rows[$i]['baik_3'] <= $rows[$i]['baik_2']) $rows[$i]['baik_3'] = $rows[$i]['baik_2'] + 1;
+
+                    $defisit--;
+                    $i = ($i + 1) % $n;
+                }
+            }
+        }
+
+        // 6) Insert ke DB
+        DB::table('aspek_pbb')->insert($rows);
+
+        // (Opsional) validasi akhir saat seeding selesai:
+        // $sum = DB::table('aspek_pbb')->where('tingkat','sltp_slta')->sum('baik_3');
+        // info("Total baik_3 per-juri = $sum (kuota ".self::KUOTA_PER_JURI.")");
     }
 }

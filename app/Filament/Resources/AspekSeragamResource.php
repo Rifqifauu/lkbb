@@ -24,6 +24,7 @@ class AspekSeragamResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
     protected static ?string $navigationGroup = 'Aspek Penilaian';
     protected static ?string $navigationLabel = 'Formulasi Kostum Pasukan';
+    //  protected static ?int    $navigationSort   = 4;
     public static function getModelLabel(): string
     {
         return 'Formulasi Kostum Pasukan:'; // judul singular

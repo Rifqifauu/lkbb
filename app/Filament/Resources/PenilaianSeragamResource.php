@@ -28,8 +28,8 @@ class PenilaianSeragamResource extends Resource
     protected static ?string $model = PenilaianSeragam::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document';
-    protected static ?string $navigationGroup = 'Penilaian — Seragam';
-    protected static ?int $navigationSort = 4;
+    protected static ?string $navigationGroup = 'Penilaian - 04. Kostum';
+    // protected static ?int $navigationSort = 10;
     protected static ?string $navigationLabel = 'Penilaian Kostum';
     protected static ?string $modelLabel = 'Penilaian Kostum';
     protected static ?string $pluralModelLabel = 'Penilaian Kostum';

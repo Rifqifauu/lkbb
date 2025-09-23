@@ -26,8 +26,8 @@ class PenilaianVariasiFormasiResource extends Resource
     protected static ?string $model = PenilaianVariasiFormasi::class;
 
     protected static ?string $navigationIcon   = 'heroicon-o-clipboard-document';
-    protected static ?string $navigationGroup = 'Penilaian — Variasi Formasi';
-    protected static ?int    $navigationSort   = 2;
+    protected static ?string $navigationGroup = 'Penilaian - 02. Variasi Formasi';
+    // protected static ?int    $navigationSort   = 11;
     protected static ?string $navigationLabel  = 'Penilaian VariasiFormasi';
     protected static ?string $modelLabel       = 'Penilaian VariasiFormasi';
     protected static ?string $pluralModelLabel = 'Penilaian VariasiFormasi';

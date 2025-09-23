@@ -20,6 +20,7 @@ class AspekPenguranganNilaiResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
     protected static ?string $navigationGroup = 'Aspek Penilaian';
     protected static ?string $navigationLabel = 'Aspek Pengurangan Nilai';
+    //  protected static ?int    $navigationSort   = 6;
 
     public static function form(Form $form): Form
     {

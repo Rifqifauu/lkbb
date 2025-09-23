@@ -25,8 +25,8 @@ class PenilaianTataRiasResource extends Resource
     protected static ?string $model = PenilaianTataRias::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document';
-    protected static ?string $navigationGroup = 'Penilaian — Tata Rias';
-    protected static ?int $navigationSort = 5;
+    protected static ?string $navigationGroup = 'Penilaian - 05. Kostum';
+    // protected static ?int $navigationSort = 11;
     protected static ?string $navigationLabel = 'Penilaian Tata Rias';
     protected static ?string $modelLabel = 'Penilaian Tata Rias';
     protected static ?string $pluralModelLabel = 'Penilaian Tata Rias';

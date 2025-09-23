@@ -20,30 +20,33 @@ class NamaJuaraResource extends Resource
     protected static ?string $model = NamaJuara::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?int    $navigationSort   = 1;
+    protected static ?string $navigationLabel = 'Daftar Juara ';
+    protected static ?string $modelLabel = 'Daftar Juara';
+    protected static ?string $pluralModelLabel = 'Daftar Juara';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-  TextInput::make('peringkat')
+                TextInput::make('peringkat')
                     ->label('Peringkat')
                     ->numeric(),
-  TextInput::make('nama_juara')
-                    ->label('Nama Juara')
-                    ,
+                TextInput::make('nama_juara')
+                    ->label('Nama Juara'),
 
-                                ]);
+            ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                 TextColumn::make('peringkat')
+                TextColumn::make('peringkat')
                     ->label('Peringkat')
                     ->searchable()
                     ->sortable(),
-                 TextColumn::make('nama_juara')
+                TextColumn::make('nama_juara')
                     ->label('Peserta')
                     ->searchable()
                     ->sortable(),
@@ -75,7 +78,7 @@ class NamaJuaraResource extends Resource
         return [
             'index' => Pages\ListNamaJuaras::route('/'),
             'edit' => Pages\EditNamaJuara::route('/{record}/edit'),
-            
+
         ];
     }
 }
