@@ -12,180 +12,244 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Radio;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class PenilaianTataRiasResource extends Resource
 {
     protected static ?string $model = PenilaianTataRias::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document';
-    protected static ?string $navigationGroup = 'Penilaian';
-    protected static ?int $navigationSort = 5; 
-    protected static ?string $navigationLabel = 'Penilaian TataRias';
-    protected static ?string $modelLabel = 'Penilaian TataRias';
-    protected static ?string $pluralModelLabel = 'Penilaian TataRias';
+    protected static ?string $navigationGroup = 'Penilaian — Tata Rias';
+    protected static ?int $navigationSort = 5;
+    protected static ?string $navigationLabel = 'Penilaian Tata Rias';
+    protected static ?string $modelLabel = 'Penilaian Tata Rias';
+    protected static ?string $pluralModelLabel = 'Penilaian Tata Rias';
+    protected static bool $shouldRegisterNavigation = true;
+
 
     public static function form(Form $form): Form
     {
         return $form->schema([
-         Select::make('id_peserta')
-    ->label('Pilih Peserta')
-    ->options(function () {
-        return Peserta::whereDoesntHave('penilaianTataRias', function ($query) {
-            $query->where('id_user', auth()->id());
-        })
-        ->pluck('nama', 'id')
-        ->toArray();
-    })
-    ->searchable()
-    ->required()
-    ->columnSpanFull(),
-
-
-         Repeater::make('penilaian_items')
-    ->label('Penilaian Per Aspek')
-    ->schema([
-        Hidden::make('id_aspek'),
-
-        Forms\Components\Section::make(function (callable $get) {
-            $aspek = AspekTataRias::find($get('id_aspek'));
-            return $aspek?->nama_penilaian ?? 'Aspek Penilaian';
-        })
-        ->schema([
-            Radio::make('nilai')
-                ->label('Pilih Nilai')
-                ->options(function (callable $get) {
-                    $aspekId = $get('id_aspek');
-                    if (!$aspekId) return [];
-
-                    $aspek = AspekTataRias::find($aspekId);
-                    if (!$aspek) return [];
-
-                    return [
-                        'kurang_1' => "Kurang 1 ({$aspek->kurang_1} poin)",
-                        'kurang_2' => "Kurang 2 ({$aspek->kurang_2} poin)",
-                        'kurang_3' => "Kurang 3 ({$aspek->kurang_3} poin)",
-                        'cukup_1'  => "Cukup 1 ({$aspek->cukup_1} poin)",
-                        'cukup_2'  => "Cukup 2 ({$aspek->cukup_2} poin)",
-                        'cukup_3'  => "Cukup 3 ({$aspek->cukup_3} poin)",
-                        'baik_1'   => "Baik 1 ({$aspek->baik_1} poin)",
-                        'baik_2'   => "Baik 2 ({$aspek->baik_2} poin)",
-                        'baik_3'   => "Baik 3 ({$aspek->baik_3} poin)",
-                    ];
+            // CREATE ONLY
+            Select::make('id_peserta')
+                ->label('Pilih Peserta')
+                ->options(function () {
+                    return Peserta::query()
+                        ->whereDoesntHave('penilaianTataRias', function ($q) {
+                            $q->where('id_user', auth()->id());
+                        })
+                        ->orderBy('tingkat')
+                        ->orderBy('no_tampil')
+                        ->get()
+                        ->mapWithKeys(function ($p) {
+                            $label = strtoupper($p->tingkat) . ' · ' .
+                                str_pad($p->no_tampil, 2, '0', STR_PAD_LEFT) .
+                                ' — ' . $p->nama;
+                            return [$p->id => $label];
+                        })
+                        ->toArray();
                 })
-                ->required()
-                ->columns([
-                    'default' => 1, // HP → 2 kolom
-                    'sm' => 3,      // Tablet → 3 kolom
-                    'lg' => 3,      // Desktop → 3 kolom
-                ])
-                ->inline(false), // biar tampil rapih per baris
-        ]),
-    ])
-    ->disableItemCreation()
-    ->disableItemDeletion()
-    ->disableItemMovement()
-    ->collapsible()
-    ->default(function () {
-        return AspekTataRias::all()->map(fn ($aspek) => [
-            'id_aspek' => $aspek->id,
-            'nama_aspek' => $aspek->nama_penilaian,
-            'nilai' => null,
-        ])->toArray();
-    })
-    ->columnSpanFull(),
+                ->searchable()
+                ->preload()
+                ->required(fn(string $operation) => $operation === 'create')
+                ->hiddenOn('edit')
+                ->columnSpanFull(),
 
+            // EDIT ONLY
+            Placeholder::make('info_peserta')
+                ->label('Peserta')
+                ->content(function (?Model $record) {
+                    if (!$record) return '-';
+                    $record->loadMissing('peserta');
+                    $p = $record->peserta;
+                    if (!$p) return '-';
+                    return strtoupper($p->tingkat) . ' · ' .
+                        str_pad($p->no_tampil, 2, '0', STR_PAD_LEFT) .
+                        ' — ' . $p->nama;
+                })
+                ->visibleOn('edit')
+                ->columnSpanFull(),
+
+            Repeater::make('penilaian_items')
+                ->label('Penilaian Per Aspek')
+                ->schema([
+                    Hidden::make('id_aspek'),
+
+                    Forms\Components\Section::make(function (callable $get) {
+                        $aspek = AspekTataRias::find($get('id_aspek'));
+                        return $aspek?->nama_penilaian ?? 'Aspek Penilaian';
+                    })
+                        ->schema([
+                            Radio::make('nilai')
+                                ->label('Pilih Nilai')
+                                ->options(function (callable $get) {
+                                    $aspekId = $get('id_aspek');
+                                    if (!$aspekId) return [];
+                                    $a = AspekTataRias::find($aspekId);
+                                    if (!$a) return [];
+
+                                    return [
+                                        $a->kurang_1 => "Kurang 1 ({$a->kurang_1} poin)",
+                                        $a->kurang_2 => "Kurang 2 ({$a->kurang_2} poin)",
+                                        $a->kurang_3 => "Kurang 3 ({$a->kurang_3} poin)",
+                                        $a->cukup_1  => "Cukup 1 ({$a->cukup_1} poin)",
+                                        $a->cukup_2  => "Cukup 2 ({$a->cukup_2} poin)",
+                                        $a->cukup_3  => "Cukup 3 ({$a->cukup_3} poin)",
+                                        $a->baik_1   => "Baik 1 ({$a->baik_1} poin)",
+                                        $a->baik_2   => "Baik 2 ({$a->baik_2} poin)",
+                                        $a->baik_3   => "Baik 3 ({$a->baik_3} poin)",
+                                    ];
+                                })
+                                ->nullable()
+                                ->columns(['default' => 1, 'sm' => 3, 'lg' => 3])
+                                ->inline(false),
+                        ]),
+                ])
+                ->disableItemCreation()
+                ->disableItemDeletion()
+                ->disableItemMovement()
+                ->collapsible()
+                ->default(function () {
+                    return AspekTataRias::all()->map(fn($a) => [
+                        'id_aspek' => $a->id,
+                        'nilai'    => null,
+                    ])->toArray();
+                })
+                ->columnSpanFull(),
         ]);
     }
 
     public static function table(Table $table): Table
-{
-    $columns = [
-        Tables\Columns\TextColumn::make('peserta.nama')
-            ->label('Peserta')
-            ->searchable()
-            ->sortable(),
+    {
+        $columns = [
+            Tables\Columns\TextColumn::make('peserta.no_tampil')
+                ->label('No Urut.')
+                ->sortable(),
 
-        Tables\Columns\TextColumn::make('penilai.name')
-            ->label('Penilai')
-            ->searchable()
-            ->sortable(),
-    ];
+            Tables\Columns\TextColumn::make('peserta.tingkat')
+                ->label('Tingkat')
+                ->badge()
+                ->color(fn($state) => match ($state) {
+                    'sltp' => 'danger',
+                    'slta' => 'success',
+                    default => 'gray',
+                })
+                ->formatStateUsing(fn($state) => strtoupper($state)),
+            Tables\Columns\TextColumn::make('peserta.nama')
+                ->label('Peserta')
+                ->searchable()
+                ->sortable(),
 
-    // Tambahkan kolom dinamis sesuai aspek
-    foreach (AspekTataRias::all() as $aspek) {
-        $columns[] = Tables\Columns\TextColumn::make("aspek_{$aspek->id}")
-            ->label($aspek->nama_penilaian)
-            ->getStateUsing(function ($record) use ($aspek) {
-                // ambil dari relasi peserta -> penilaianTataRias (sudah di-load)
-                $penilaian = $record->peserta->penilaianTataRias
-                    ->where('id_user', auth()->id())
-                    ->firstWhere('id_aspek', $aspek->id);
+            Tables\Columns\TextColumn::make('penilai.name')
+                ->label('Penilai')
+                ->searchable()
+                ->sortable(),
+        ];
 
-                if ($penilaian && $penilaian->nilai) {
-                    return match ($penilaian->nilai) {
-                        'kurang_1' => $aspek->kurang_1 ?? 0,
-                        'kurang_2' => $aspek->kurang_2 ?? 0,
-                        'kurang_3' => $aspek->kurang_3 ?? 0,
-                        'cukup_1'  => $aspek->cukup_1 ?? 0,
-                        'cukup_2'  => $aspek->cukup_2 ?? 0,
-                        'cukup_3'  => $aspek->cukup_3 ?? 0,
-                        'baik_1'   => $aspek->baik_1 ?? 0,
-                        'baik_2'   => $aspek->baik_2 ?? 0,
-                        'baik_3'   => $aspek->baik_3 ?? 0,
-                        default    => $penilaian->nilai,
-                    };
+        foreach (AspekTataRias::all() as $aspek) {
+            $columns[] = Tables\Columns\TextColumn::make("aspek_{$aspek->id}")
+                ->label($aspek->nama_penilaian)
+                ->getStateUsing(function ($record) use ($aspek) {
+                    $nilai = PenilaianTataRias::where('id_peserta', $record->id_peserta)
+                        ->where('id_user', $record->id_user)
+                        ->where('id_aspek', $aspek->id)
+                        ->value('nilai');
+
+                    return $nilai ?? '-';
+                })
+                ->alignCenter();
+        }
+
+        return $table
+            ->modifyQueryUsing(function (Builder $query) {
+                $user = Auth::user();
+
+                if (!$user->hasAnyRole(['super_admin', 'admin panitia'])) {
+                    $query->where('id_user', $user->id);
                 }
 
-                return '-';
+                $query->with(['peserta', 'penilai'])
+                    ->whereIn('id', function ($sub) {
+                        $sub->selectRaw('MIN(id)')
+                            ->from('penilaian_tata_rias')
+                            ->groupBy('id_peserta', 'id_user');
+                    });
             })
-            ->alignCenter();
-    }
-
-    return $table
-        ->query(
-            PenilaianTataRias::with([
-                'peserta.penilaianTataRias', // load semua penilaian peserta
-                'penilai',
-                'aspek'
+            ->columns($columns)
+            ->actions([
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('deleteGroup')
+                    ->label('Delete')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->action(function ($record) {
+                        \App\Models\PenilaianTataRias::where('id_peserta', $record->id_peserta)
+                            ->where('id_user', $record->id_user)
+                            ->delete();
+                    }),
             ])
-            ->where('id_user', auth()->id()) // hanya penilai login
-            ->orderBy('id_peserta')
-        )
-        ->columns($columns)
-        ->filters([
-            Tables\Filters\SelectFilter::make('id_peserta')
-                ->label('Filter Peserta')
-                ->options(Peserta::pluck('nama', 'id')->toArray()),
-        ])
-        ->actions([
-            Tables\Actions\DeleteAction::make(),
-        ])
-        ->bulkActions([
-            Tables\Actions\BulkActionGroup::make([
-                Tables\Actions\DeleteBulkAction::make(),
-            ]),
-        ]);
-}
-
+            ->bulkActions([
+                Tables\Actions\BulkAction::make('deleteGroup')
+                    ->label('Delete')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->action(function ($records) {
+                        foreach ($records as $record) {
+                            \App\Models\PenilaianTataRias::where('id_peserta', $record->id_peserta)
+                                ->where('id_user', $record->id_user)
+                                ->delete();
+                        }
+                    }),
+            ]);
+    }
 
     public static function getRelations(): array
     {
         return [];
     }
+    public static function getNavigationItems(): array
+    {
+        return [
+            \Filament\Navigation\NavigationItem::make('Tata Rias — Semua')
+                ->group(static::getNavigationGroup())
+                ->icon(static::getNavigationIcon())
+                ->url(static::getUrl('index')),
+
+            \Filament\Navigation\NavigationItem::make('Tata Rias — SD')
+                ->group(static::getNavigationGroup())
+                ->icon('heroicon-o-academic-cap')
+                ->url(static::getUrl('sd')),
+
+            \Filament\Navigation\NavigationItem::make('Tata Rias — SLTP')
+                ->group(static::getNavigationGroup())
+                ->icon('heroicon-o-academic-cap')
+                ->url(static::getUrl('sltp')),
+
+            \Filament\Navigation\NavigationItem::make('Tata Rias — SLTA')
+                ->group(static::getNavigationGroup())
+                ->icon('heroicon-o-academic-cap')
+                ->url(static::getUrl('slta')),
+
+        ];
+    }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPenilaianTataRias::route('/'),
+            'index'  => Pages\ListPenilaianTataRias::route('/'),
+            'sd'     => Pages\ListPenilaianTataRiasSD::route('/sd'),
+            'sltp'   => Pages\ListPenilaianTataRiasSLTP::route('/sltp'),
+            'slta'   => Pages\ListPenilaianTataRiasSLTA::route('/slta'),
             'create' => Pages\CreatePenilaianTataRias::route('/create'),
-            'edit' => Pages\EditPenilaianTataRias::route('/{record}/edit'),
+            'edit'   => Pages\EditPenilaianTataRias::route('/{record}/edit'),
         ];
     }
 }
